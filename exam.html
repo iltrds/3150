@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practice exam — CIS*3150 Midterm 1</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2333363B'/%3E%3Ctext x='16' y='21' font-size='14' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  dialog { border: 1px solid var(--rule); border-radius: 16px; padding: 26px; max-width: 440px; background: var(--card); color: var(--ink); box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  dialog::backdrop { background: rgba(23,25,28,.45); }
+  dialog h2 { font-size: 24px; }
+  .strategy { padding-left: 1.2em; margin: 0; }
+  .strategy li { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<header id="site-head"></header>
+<main class="wrap">
+
+  <!-- ============ setup ============ -->
+  <section id="setup">
+    <h1 style="font-size:clamp(32px,4.6vw,48px)">Practice exam</h1>
+    <p class="lede">29 questions drawn from all four topics, in topic order, like the real midterm. Each new exam favours questions you haven’t seen yet.</p>
+
+    <div id="resume" class="panel" hidden style="margin:22px 0;border-color:var(--hi)">
+      <h3 style="margin-bottom:6px">You have an exam in progress</h3>
+      <p class="muted" id="resume-text" style="margin-bottom:14px"></p>
+      <div class="btn-row"><button class="btn" id="resume-btn" type="button">Resume exam</button><button class="btn secondary" id="discard-btn" type="button">Discard it</button></div>
+    </div>
+
+    <h2 style="margin-top:34px;font-size:22px">Choose a time limit</h2>
+    <div class="mode-grid" id="modes" role="group" aria-label="Time limit">
+      <button class="mode" type="button" data-mode="real" aria-pressed="false"><span class="bubble" aria-hidden="true">A</span><h3>Real: 80 minutes</h3><p>The actual exam length, about 2 min 45 s per question.</p></button>
+      <button class="mode" type="button" data-mode="tight" aria-pressed="true"><span class="bubble" aria-hidden="true">B</span><h3>Tight: 65 minutes</h3><p>Recommended. Trains you to finish with 15 minutes to spare, since this prof’s exams run long.</p></button>
+      <div class="mode" data-mode="custom" aria-pressed="false" role="button" tabindex="0"><span class="bubble" aria-hidden="true">C</span><h3>Custom</h3><p><label>Minutes: <input type="number" id="custom-min" min="5" max="240" value="50"></label></p></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>What you’ll get</h3>
+        <ul class="strategy">
+          <li id="mix-line"></li>
+          <li>A bubble sheet you can fill directly, as on the day. Click a filled bubble again to erase it.</li>
+          <li>A pace bar comparing questions answered with time used.</li>
+          <li>Warnings at 20, 10, 5 and 1 minutes left. At zero the exam submits itself.</li>
+          <li>Results by topic, your slowest questions, and an explanation for every answer.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Strategy for a long exam</h3>
+        <ol class="strategy">
+          <li>First pass: answer anything you know in under a minute. Flag the rest and move on.</li>
+          <li>Watch the pace bar. If you fall two or more questions behind, skip harder questions sooner.</li>
+          <li>Second pass: work the flagged questions, cheapest first.</li>
+          <li>With 5 minutes left, bubble a guess for every blank. There is no penalty for a wrong guess on most MCQ exams, but a blank always scores zero.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:26px">
+      <button class="btn" id="start" type="button">Start exam</button>
+      <span class="small muted">Keyboard: <kbd>A</kbd>–<kbd>D</kbd> answer, <kbd>←</kbd> <kbd>→</kbd> move, <kbd>F</kbd> flag</span>
+    </div>
+  </section>
+
+  <!-- ============ running ============ -->
+  <section id="run" hidden>
+    <div class="exam-bar">
+      <div class="wrap inner" style="padding:0">
+        <div class="clock" id="clock" role="timer" aria-label="Time remaining">80:00</div>
+        <div class="pace">
+          <div class="track" aria-hidden="true"><div class="done" id="pace-done"></div><div class="time" id="pace-time"></div></div>
+          <div class="status" id="pace-status" aria-live="off"></div>
+        </div>
+        <button class="btn secondary small sheet-toggle" id="sheet-toggle" type="button" aria-controls="sheet" aria-expanded="false">Bubble sheet</button>
+        <button class="btn small" id="submit" type="button">Hand in</button>
+      </div>
+    </div>
+    <div class="exam-layout">
+      <div class="exam-q">
+        <div id="qarea"></div>
+        <div class="qnav">
+          <button class="btn secondary" id="prev" type="button">Previous</button>
+          <button class="btn secondary flag-btn" id="flag" type="button" aria-pressed="false">Flag for review</button>
+          <button class="btn" id="next" type="button">Next</button>
+        </div>
+      </div>
+      <aside class="sheet" id="sheet" aria-label="Bubble sheet">
+        <h4>Bubble sheet</h4>
+        <ol id="sheet-list"></ol>
+        <p class="legend">Click a number to go to that question. Yellow numbers are flagged.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ results ============ -->
+  <section id="results" hidden></section>
+
+  <dialog id="confirm">
+    <h2>Hand in your exam?</h2>
+    <p id="confirm-text"></p>
+    <div class="btn-row" style="justify-content:flex-end">
+      <button class="btn secondary" id="confirm-no" type="button">Keep working</button>
+      <button class="btn" id="confirm-yes" type="button">Hand in</button>
+    </div>
+  </dialog>
+</main>
+<footer id="site-foot"></footer>
+<script src="assets/questions.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var N = 29, MIX = { 1: 6, 2: 7, 3: 9, 4: 7 };
+  var MODES = { real: { label: 'Real (80 min)', min: 80 }, tight: { label: 'Tight (65 min)', min: 65 } };
+  var mode = 'tight';
+  var S = null, timer = null, lastTick = 0;
+  var store = App.store;
+
+  document.getElementById('mix-line').textContent = N + ' questions: ' + [1, 2, 3, 4].map(function (t) { return MIX[t] + ' on ' + TOPICS[t].short; }).join(', ') + '.';
+
+  /* ---------- mode picker ---------- */
+  var modeEls = document.querySelectorAll('#modes .mode');
+  function pickMode(m) { mode = m; modeEls.forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.mode === m ? 'true' : 'false'); }); }
+  modeEls.forEach(function (x) {
+    x.addEventListener('click', function () { pickMode(x.dataset.mode); });
+    x.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target === x) { e.preventDefault(); pickMode(x.dataset.mode); } });
+  });
+  document.getElementById('custom-min').addEventListener('focus', function () { pickMode('custom'); });
+
+  /* ---------- draw questions ---------- */
+  function draw() {
+    var seen = store.get('seen', {});
+    var picked = [];
+    [1, 2, 3, 4].forEach(function (t) {
+      var all = QB.filter(function (q) { return q.t === t; });
+      var fresh = App.shuffle(all.filter(function (q) { return !seen[q.id]; }));
+      var old = App.shuffle(all.filter(function (q) { return seen[q.id]; }));
+      picked = picked.concat(fresh.concat(old).slice(0, MIX[t]));
+    });
+    return picked.map(App.instance);
+  }
+
+  function minutesFor(m) {
+    if (m === 'custom') { var v = parseInt(document.getElementById('custom-min').value, 10); return Math.min(240, Math.max(5, v || 50)); }
+    return MODES[m].min;
+  }
+
+  function startExam() {
+    var mins = minutesFor(mode);
+    S = {
+      mode: mode, label: mode === 'custom' ? 'Custom (' + mins + ' min)' : MODES[mode].label,
+      limit: mins * 60, startedAt: Date.now(), items: draw(),
+      answers: [], flags: [], times: [], current: 0, warned: {}
+    };
+    for (var i = 0; i < N; i++) { S.answers.push(null); S.flags.push(false); S.times.push(0); }
+    save(); enterRun();
+  }
+  function save() { if (S) store.set('exam-active', S); }
+
+  /* ---------- running ---------- */
+  function enterRun() {
+    document.getElementById('setup').hidden = true;
+    document.getElementById('results').hidden = true;
+    document.getElementById('run').hidden = false;
+    buildSheet(); render(); lastTick = Date.now();
+    clearInterval(timer); timer = setInterval(tick, 250); tick();
+    window.scrollTo(0, 0);
+  }
+  function elapsed() { return (Date.now() - S.startedAt) / 1000; }
+
+  function tick() {
+    if (!S) return;
+    var now = Date.now();
+    if (!document.hidden) S.times[S.current] += (now - lastTick) / 1000;
+    lastTick = now;
+    var rem = S.limit - elapsed();
+    var clock = document.getElementById('clock');
+    clock.textContent = App.fmtTime(rem);
+    clock.classList.toggle('low', rem <= 300);
+    // pace
+    var answered = S.answers.filter(function (a) { return a != null; }).length;
+    var target = S.limit / N;
+    var expected = Math.min(N, Math.floor(elapsed() / target));
+    document.getElementById('pace-done').style.width = (answered / N * 100) + '%';
+    document.getElementById('pace-time').style.left = Math.min(100, elapsed() / S.limit * 100) + '%';
+    var diff = answered - expected, st;
+    if (diff >= 2) st = '<b class="ahead">Ahead by ' + diff + '</b>';
+    else if (diff <= -2) st = '<b class="behind">Behind by ' + (-diff) + '</b>, skip and flag sooner';
+    else st = '<b>On pace</b>';
+    document.getElementById('pace-status').innerHTML = answered + ' of ' + N + ' answered. ' + st + '. Target ' + App.fmtTime(target) + ' per question.';
+    // warnings
+    [[20, 'warn'], [10, 'warn'], [5, 'danger'], [1, 'danger']].forEach(function (w) {
+      var m = w[0];
+      if (S.limit > m * 60 && rem <= m * 60 && !S.warned[m]) {
+        S.warned[m] = true;
+        var blanks = N - answered;
+        var msg = m + (m === 1 ? ' minute' : ' minutes') + ' left.';
+        if (m <= 5 && blanks) msg += ' Bubble a guess for your ' + blanks + ' blank' + (blanks > 1 ? 's' : '') + ' now.';
+        else if (m >= 10) { var fl = S.flags.filter(Boolean).length; if (fl) msg += ' ' + fl + ' flagged to revisit.'; }
+        App.toast(msg, w[1], 6000);
+      }
+    });
+    if (rem <= 0) { App.toast('Time is up. Your exam has been handed in.', 'danger', 5000); finish(); return; }
+    if (Math.floor(now / 3000) !== Math.floor((now - 250) / 3000)) save();
+  }
+
+  function render() {
+    var area = document.getElementById('qarea'); area.innerHTML = '';
+    var i = S.current;
+    area.appendChild(App.renderQuestion({ inst: S.items[i], number: i + 1, total: N, selected: S.answers[i], reveal: false, showMeta: false, onSelect: function (di) { setAnswer(i, di, true); } }));
+    var fb = document.getElementById('flag');
+    fb.setAttribute('aria-pressed', S.flags[i] ? 'true' : 'false');
+    fb.textContent = S.flags[i] ? 'Flagged' : 'Flag for review';
+    document.getElementById('prev').disabled = i === 0;
+    document.getElementById('next').textContent = i === N - 1 ? 'Review sheet' : 'Next';
+    updateSheet();
+  }
+
+  function setAnswer(i, di, fromCard) {
+    S.answers[i] = S.answers[i] === di ? null : di; // clicking a filled bubble erases it
+    save();
+    if (i === S.current) render(); else updateSheet();
+    tick();
+  }
+  function go(i) {
+    if (i < 0 || i >= N) return;
+    tick(); S.current = i; save(); render();
+    document.getElementById('sheet').classList.remove('open');
+    document.getElementById('sheet-toggle').setAttribute('aria-expanded', 'false');
+    var bar = document.querySelector('.exam-bar');
+    if (window.scrollY > bar.offsetTop + 10) window.scrollTo({ top: 0 });
+  }
+  function toggleFlag() { S.flags[S.current] = !S.flags[S.current]; save(); render(); }
+
+  function buildSheet() {
+    var ol = document.getElementById('sheet-list'); ol.innerHTML = '';
+    for (var i = 0; i < N; i++) {
+      (function (i) {
+        var li = App.el('li');
+        var num = App.el('button', { class: 'num', type: 'button', 'aria-label': 'Go to question ' + (i + 1) }, String(i + 1));
+        num.addEventListener('click', function () { go(i); });
+        li.appendChild(num);
+        for (var d = 0; d < 4; d++) {
+          (function (d) {
+            var b = App.el('button', { class: 'bubble', type: 'button', 'aria-label': 'Question ' + (i + 1) + ', answer ' + App.LETTERS[d] }, App.LETTERS[d]);
+            b.addEventListener('click', function () { setAnswer(i, d, false); });
+            li.appendChild(b);
+          })(d);
+        }
+        ol.appendChild(li);
+      })(i);
+    }
+  }
+  function updateSheet() {
+    var lis = document.querySelectorAll('#sheet-list li');
+    lis.forEach(function (li, i) {
+      li.classList.toggle('current', i === S.current);
+      li.classList.toggle('flagged', !!S.flags[i]);
+      li.querySelectorAll('.bubble').forEach(function (b, d) {
+        var f = S.answers[i] === d;
+        b.classList.toggle('is-filled', f);
+        b.setAttribute('aria-pressed', f ? 'true' : 'false');
+      });
+    });
+  }
+
+  document.getElementById('prev').addEventListener('click', function () { go(S.current - 1); });
+  document.getElementById('next').addEventListener('click', function () {
+    if (S.current < N - 1) go(S.current + 1);
+    else { var sh = document.getElementById('sheet'); sh.classList.add('open'); document.getElementById('sheet-toggle').setAttribute('aria-expanded', 'true'); sh.scrollIntoView({ block: 'nearest' }); }
+  });
+  document.getElementById('flag').addEventListener('click', toggleFlag);
+  document.getElementById('sheet-toggle').addEventListener('click', function () {
+    var open = document.getElementById('sheet').classList.toggle('open');
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!S || document.getElementById('run').hidden || document.getElementById('confirm').open) return;
+    var k = App.choiceKey(e);
+    if (k >= 0) { e.preventDefault(); setAnswer(S.current, k, true); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(S.current + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(S.current - 1); }
+    else if (e.key === 'f' || e.key === 'F') { if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); toggleFlag(); } }
+  });
+
+  /* ---------- hand in ---------- */
+  var dlg = document.getElementById('confirm');
+  document.getElementById('submit').addEventListener('click', function () {
+    var blanks = S.answers.filter(function (a) { return a == null; }).length, fl = S.flags.filter(Boolean).length;
+    var parts = [];
+    if (blanks) parts.push('<strong>' + blanks + ' unanswered</strong> (they will be marked wrong)');
+    if (fl) parts.push(fl + ' flagged');
+    document.getElementById('confirm-text').innerHTML = (parts.length ? 'You have ' + parts.join(' and ') + '. ' : 'Every question has an answer. ') + App.fmtTime(S.limit - elapsed()) + ' remaining.';
+    if (dlg.showModal) dlg.showModal(); else if (confirm('Hand in your exam?')) finish();
+  });
+  document.getElementById('confirm-no').addEventListener('click', function () { dlg.close(); });
+  document.getElementById('confirm-yes').addEventListener('click', function () { dlg.close(); finish(); });
+
+  function finish() {
+    clearInterval(timer);
+    if (!S) return;
+    var used = Math.min(S.limit, elapsed());
+    var score = S.items.reduce(function (s, it, i) { return s + (App.isCorrect(it, S.answers[i]) ? 1 : 0); }, 0);
+    // remember seen + missed
+    var seen = store.get('seen', {}), missed = store.get('missed', {});
+    S.items.forEach(function (it, i) { seen[it.id] = true; if (App.isCorrect(it, S.answers[i])) delete missed[it.id]; else missed[it.id] = true; });
+    store.set('seen', seen); store.set('missed', missed);
+    var hist = store.get('history', []);
+    hist.push({ at: Date.now(), mode: S.label, score: score, total: N, used: Math.round(used) });
+    store.set('history', hist.slice(-30));
+    store.del('exam-active');
+    var done = S; S = null;
+    showResults(done, score, used);
+  }
+
+  /* ---------- results ---------- */
+  function showResults(R, score, used) {
+    document.getElementById('run').hidden = true;
+    var sec = document.getElementById('results'); sec.hidden = false;
+    var blanks = R.answers.filter(function (a) { return a == null; }).length;
+    var pct = Math.round(score / N * 100);
+    var byTopic = {};
+    R.items.forEach(function (it, i) { var t = App.byId(it.id).t; byTopic[t] = byTopic[t] || [0, 0]; byTopic[t][1]++; if (App.isCorrect(it, R.answers[i])) byTopic[t][0]++; });
+    var target = R.limit / N;
+    var slowIdx = R.times.map(function (t, i) { return [t, i]; }).sort(function (a, b) { return b[0] - a[0]; }).slice(0, 5).map(function (p) { return p[1]; });
+    var verdict = pct >= 80 ? 'Strong result.' : pct >= 65 ? 'Solid, with gaps to close.' : 'Worth another round on the weak topics below.';
+
+    var h = '<h1 style="font-size:clamp(30px,4vw,44px)">Exam results</h1>' +
+      '<div class="result-score">' + score + '/' + N + '</div><p class="lede">' + pct + '%. ' + verdict + '</p>' +
+      '<div class="stat-row"><div><b>' + App.fmtTime(used) + '</b>time used of ' + App.fmtTime(R.limit) + '</div>' +
+      '<div><b>' + App.fmtTime(used / N) + '</b>average per question</div>' +
+      '<div><b>' + blanks + '</b>left blank</div><div><b>' + R.flags.filter(Boolean).length + '</b>flagged</div></div>';
+    h += '<div class="grid-2" style="margin-top:28px"><div class="panel"><h3>By topic</h3><div class="topic-bars">';
+    [1, 2, 3, 4].forEach(function (t) {
+      var v = byTopic[t] || [0, 0], p = v[1] ? v[0] / v[1] * 100 : 0;
+      h += '<div class="tb"><span>' + TOPICS[t].short + '</span><div class="progress"><i style="width:' + p + '%;' + (p < 60 ? 'background:var(--red)' : '') + '"></i></div><span>' + v[0] + '/' + v[1] + '</span></div>';
+    });
+    h += '</div><p class="small muted" style="margin-top:14px">Weakest topic? <a href="quiz.html?topic=' + weakest(byTopic) + '">Quiz it</a> or <a href="guide.html#t' + weakest(byTopic) + '">reread it</a>.</p></div>';
+    h += '<div class="panel"><h3>Where your time went</h3><p class="small muted">Target was ' + App.fmtTime(target) + ' per question. Your five slowest:</p><ul class="history-list">';
+    slowIdx.forEach(function (i) {
+      var q = App.byId(R.items[i].id), ok = App.isCorrect(R.items[i], R.answers[i]);
+      h += '<li><span>Q' + (i + 1) + ' <span class="muted">' + TOPICS[q.t].short + ', ' + q.s + '</span></span><span><span class="time-pill' + (R.times[i] > target * 1.5 ? ' slow' : '') + '">' + App.fmtTime(R.times[i]) + '</span> ' + (ok ? '<b style="color:var(--form)">right</b>' : '<b style="color:var(--red)">wrong</b>') + '</span></li>';
+    });
+    h += '</ul></div></div>';
+    h += '<div class="btn-row" style="margin:28px 0 0"><button class="btn" id="again" type="button">New practice exam</button><a class="btn secondary" href="quiz.html">Quiz missed questions</a></div>';
+    h += '<div class="filters"><div class="seg" id="filter" role="group" aria-label="Filter review"><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="wrong" aria-pressed="false">Wrong or blank</button><button type="button" data-f="flag" aria-pressed="false">Flagged</button></div></div>';
+    h += '<ul class="review-list" id="review"></ul>';
+    sec.innerHTML = h;
+
+    function drawReview(f) {
+      var ul = document.getElementById('review'); ul.innerHTML = '';
+      R.items.forEach(function (it, i) {
+        var ok = App.isCorrect(it, R.answers[i]);
+        if (f === 'wrong' && ok) return;
+        if (f === 'flag' && !R.flags[i]) return;
+        var q = App.byId(it.id), a = R.answers[i];
+        var cls = a == null ? 'blank' : ok ? 'right' : 'wrong';
+        var li = App.el('li', { class: 'review-item ' + cls });
+        var mine = a == null ? '<b class="w">Left blank.</b>' : ok ? '<b class="r">Correct:</b> ' + App.LETTERS[a] + '. ' + q.c[it.order[a]] : '<b class="w">You chose:</b> ' + App.LETTERS[a] + '. ' + q.c[it.order[a]];
+        var correct = ok ? '' : '<br><b class="r">Answer:</b> ' + App.LETTERS[it.order.indexOf(q.a)] + '. ' + q.c[q.a];
+        li.innerHTML = '<div class="qmeta" style="margin-bottom:6px"><span>Question ' + (i + 1) + '</span><span class="tag">' + TOPICS[q.t].short + '</span>' + (q.src === 'lecture' ? '<span class="tag lecture">From lecture</span>' : '') + (R.flags[i] ? '<span class="tag" style="background:var(--hi-2)">Flagged</span>' : '') + '<span class="time-pill' + (R.times[i] > target * 1.5 ? ' slow' : '') + '">' + App.fmtTime(R.times[i]) + '</span></div>' +
+          '<div class="q">' + q.q + '</div><div class="ans">' + mine + correct + '</div><details' + (ok ? '' : ' open') + '><summary>Why</summary><p>' + q.x + '</p></details>';
+        ul.appendChild(li);
+      });
+      if (!ul.children.length) ul.innerHTML = '<li class="muted">Nothing here.</li>';
+    }
+    drawReview('all');
+    document.querySelectorAll('#filter button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('#filter button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true'); drawReview(b.dataset.f);
+      });
+    });
+    document.getElementById('again').addEventListener('click', function () { sec.hidden = true; document.getElementById('setup').hidden = false; checkResume(); window.scrollTo(0, 0); });
+    window.scrollTo(0, 0);
+  }
+  function weakest(bt) { var w = 1, wp = 2; [1, 2, 3, 4].forEach(function (t) { var v = bt[t]; if (v && v[0] / v[1] < wp) { wp = v[0] / v[1]; w = t; } }); return w; }
+
+  /* ---------- resume ---------- */
+  function checkResume() {
+    var a = store.get('exam-active', null), box = document.getElementById('resume');
+    if (!a || !a.items || a.items.length !== N) { box.hidden = true; return; }
+    var rem = a.limit - (Date.now() - a.startedAt) / 1000;
+    var answered = a.answers.filter(function (x) { return x != null; }).length;
+    if (rem <= 0) {
+      // ran out while away: hand it in now
+      S = a; App.toast('Your earlier exam ran out of time and has been handed in.', 'warn', 5000); finish(); return;
+    }
+    box.hidden = false;
+    document.getElementById('resume-text').textContent = a.label + ', ' + answered + ' of ' + N + ' answered, ' + App.fmtTime(rem) + ' left. The clock kept running while you were away.';
+  }
+  document.getElementById('resume-btn').addEventListener('click', function () { S = store.get('exam-active', null); if (S) enterRun(); });
+  document.getElementById('discard-btn').addEventListener('click', function () { store.del('exam-active'); document.getElementById('resume').hidden = true; });
+  document.getElementById('start').addEventListener('click', function () {
+    if (store.get('exam-active', null) && !confirm('Starting a new exam discards the one in progress. Continue?')) return;
+    startExam();
+  });
+  window.addEventListener('beforeunload', function () { save(); });
+
+  checkResume();
+})();
+</script>
+</body>
+</html>

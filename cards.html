@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flashcards — CIS*3150 Midterm 1</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2333363B'/%3E%3Ctext x='16' y='21' font-size='14' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header id="site-head"></header>
+<main class="wrap">
+  <h1 style="font-size:clamp(32px,4.6vw,48px)">Flashcards</h1>
+  <p class="lede" style="margin-bottom:26px">Say the answer out loud, then flip. Cards you mark “Again” come back later in the round; cards you know drop out.</p>
+
+  <div class="deck-controls">
+    <div class="chips" id="topic-chips" role="group" aria-label="Topics"></div>
+    <div class="btn-row">
+      <label class="toggle"><input type="checkbox" id="lecture-only"> Lecture cards only</label>
+      <button class="btn secondary small" id="shuffle" type="button">Shuffle</button>
+    </div>
+  </div>
+
+  <div class="progress" style="max-width:760px;margin:0 auto 18px" aria-hidden="true"><i id="bar" style="width:0"></i></div>
+
+  <div class="card-stage">
+    <button class="flash" id="flash" type="button" aria-describedby="flash-hint">
+      <div class="face front"><span class="side">Front</span><span class="src" id="src-front"></span><div class="body" id="front"></div></div>
+      <div class="face back"><span class="side">Back</span><span class="src" id="src-back"></span><div class="body" id="back"></div></div>
+    </button>
+  </div>
+  <div class="deck-actions" id="actions">
+    <button class="btn secondary" id="again" type="button">Again <kbd>1</kbd></button>
+    <button class="btn" id="flip" type="button">Flip <kbd>Space</kbd></button>
+    <button class="btn form" id="know" type="button">Got it <kbd>2</kbd></button>
+  </div>
+  <p class="deck-status" id="status" aria-live="polite"></p>
+  <p class="deck-status small" id="flash-hint">Keyboard: Space flips, 1 = again, 2 = got it.</p>
+</main>
+<footer id="site-foot"></footer>
+<script src="assets/questions.js"></script>
+<script src="assets/cards.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var startTopic = parseInt(params.get('topic'), 10);
+  var selected = { 1: true, 2: true, 3: true, 4: true };
+  if (startTopic >= 1 && startTopic <= 4) selected = { 1: false, 2: false, 3: false, 4: false }, selected[startTopic] = true;
+  var queue = [], total = 0, known = 0, flipped = false;
+
+  var chips = document.getElementById('topic-chips');
+  [1, 2, 3, 4].forEach(function (t) {
+    var n = CARDS.filter(function (c) { return c.t === t; }).length;
+    var b = App.el('button', { class: 'chip', type: 'button', 'aria-pressed': selected[t] ? 'true' : 'false' },
+      '<span class="bubble" aria-hidden="true">' + t + '</span>' + TOPICS[t].short + ' <span class="count">' + n + '</span>');
+    b.addEventListener('click', function () {
+      selected[t] = !selected[t];
+      if (![1, 2, 3, 4].some(function (k) { return selected[k]; })) selected[t] = true; // keep at least one
+      b.setAttribute('aria-pressed', selected[t] ? 'true' : 'false');
+      build();
+    });
+    chips.appendChild(b);
+  });
+
+  var lectureOnly = document.getElementById('lecture-only');
+  lectureOnly.addEventListener('change', build);
+  document.getElementById('shuffle').addEventListener('click', build);
+
+  function build() {
+    var deck = CARDS.filter(function (c) { return selected[c.t] && (!lectureOnly.checked || c.src === 'lecture'); });
+    queue = App.shuffle(deck); total = deck.length; known = 0;
+    show();
+  }
+
+  var flash = document.getElementById('flash');
+  function setFlip(f) { flipped = f; flash.classList.toggle('flipped', f); }
+  function show() {
+    setFlip(false);
+    var bar = document.getElementById('bar'); bar.style.width = total ? (known / total * 100) + '%' : '0';
+    var status = document.getElementById('status');
+    var actions = document.getElementById('actions');
+    if (!queue.length) {
+      document.getElementById('front').innerHTML = total ? 'Deck finished.' : 'No cards match these filters.';
+      document.getElementById('back').innerHTML = '';
+      document.getElementById('src-front').innerHTML = '';
+      status.innerHTML = total ? 'You got through all ' + total + ' cards. <a href="#" id="restart">Go again</a> or <a href="quiz.html">try a quiz</a>.' : '';
+      actions.style.visibility = 'hidden';
+      var r = document.getElementById('restart'); if (r) r.addEventListener('click', function (e) { e.preventDefault(); build(); });
+      return;
+    }
+    actions.style.visibility = 'visible';
+    var c = queue[0];
+    document.getElementById('front').innerHTML = c.f;
+    document.getElementById('back').innerHTML = c.b;
+    var tag = '<span class="tag' + (c.src === 'lecture' ? ' lecture' : '') + '">' + (c.src === 'lecture' ? 'From lecture' : TOPICS[c.t].short) + '</span>';
+    document.getElementById('src-front').innerHTML = tag;
+    document.getElementById('src-back').innerHTML = tag;
+    status.textContent = known + ' of ' + total + ' known, ' + queue.length + ' left in this round';
+  }
+
+  function again() {
+    if (!queue.length) return;
+    var c = queue.shift();
+    var pos = Math.min(queue.length, 3 + Math.floor(Math.random() * 3)); // comes back in a few cards
+    queue.splice(pos, 0, c);
+    show();
+  }
+  function know() { if (!queue.length) return; queue.shift(); known++; show(); }
+
+  flash.addEventListener('click', function () { if (queue.length) setFlip(!flipped); });
+  document.getElementById('flip').addEventListener('click', function () { if (queue.length) setFlip(!flipped); });
+  document.getElementById('again').addEventListener('click', again);
+  document.getElementById('know').addEventListener('click', know);
+  document.addEventListener('keydown', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return;
+    if (e.key === ' ' && e.target === document.body) { e.preventDefault(); if (queue.length) setFlip(!flipped); }
+    else if (e.key === '1') again();
+    else if (e.key === '2') know();
+  });
+
+  build();
+})();
+</script>
+</body>
+</html>
