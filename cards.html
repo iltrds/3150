@@ -19,7 +19,7 @@
   <div class="deck-controls">
     <div class="chips" id="topic-chips" role="group" aria-label="Topics"></div>
     <div class="btn-row">
-      <label class="toggle"><input type="checkbox" id="lecture-only"> Lecture cards only</label>
+      <label class="toggle"><input type="checkbox" id="lecture-only"> Lecture and practice-test cards only</label>
       <button class="btn secondary small" id="shuffle" type="button">Shuffle</button>
     </div>
   </div>
@@ -42,6 +42,7 @@
 </main>
 <footer id="site-foot"></footer>
 <script src="assets/questions.js"></script>
+<script src="assets/questions-prof.js"></script>
 <script src="assets/cards.js"></script>
 <script src="assets/app.js"></script>
 <script>
@@ -71,7 +72,7 @@
   document.getElementById('shuffle').addEventListener('click', build);
 
   function build() {
-    var deck = CARDS.filter(function (c) { return selected[c.t] && (!lectureOnly.checked || c.src === 'lecture'); });
+    var deck = CARDS.filter(function (c) { return selected[c.t] && (!lectureOnly.checked || c.src); });
     queue = App.shuffle(deck); total = deck.length; known = 0;
     show();
   }
@@ -96,7 +97,7 @@
     var c = queue[0];
     document.getElementById('front').innerHTML = c.f;
     document.getElementById('back').innerHTML = c.b;
-    var tag = '<span class="tag' + (c.src === 'lecture' ? ' lecture' : '') + '">' + (c.src === 'lecture' ? 'From lecture' : TOPICS[c.t].short) + '</span>';
+    var tag = c.src === 'lecture' ? '<span class="tag lecture">From lecture</span>' : c.src === 'practice' ? '<span class="tag practice">From practice test</span>' : '<span class="tag">' + TOPICS[c.t].short + '</span>';
     document.getElementById('src-front').innerHTML = tag;
     document.getElementById('src-back').innerHTML = tag;
     status.textContent = known + ' of ' + total + ' known, ' + queue.length + ' left in this round';

@@ -5,9 +5,9 @@ A static study site for CIS*3150 Theory of Computation, Midterm 1 (Thursday, Oct
 **Live site:** https://iltrds.github.io/3150/
 
 - **Study guide** (`guide.html`): every topic on the announcement, plus lecture-only material (DFA minimization, lexical analysis, induction examples, leftmost/rightmost derivations).
-- **Flashcards** (`cards.html`): 75 cards, filter by topic or lecture-only.
-- **Topic quizzes** (`quiz.html`): 150 questions with explanations; retry the ones you missed.
-- **Practice exam** (`exam.html`): 29 questions, 80- or 65-minute timer, bubble sheet, pace bar, results by topic.
+- **Flashcards** (`cards.html`): 83 cards, filter by topic, lecture or practice test.
+- **Topic quizzes** (`quiz.html`): 221 questions with explanations, 71 of them in the practice-test style; retry the ones you missed.
+- **Practice exam** (`exam.html`): the Oct 6 class practice test (9 questions, 25 min), or 29 questions in the prof's format (five choices, shared setups) with an 80- or 65-minute timer, A–E bubble sheet, pace bar and results by topic.
 
 No build step and no dependencies: plain HTML, CSS and JavaScript. Progress is stored in the browser's localStorage.
 
@@ -28,7 +28,7 @@ No build step and no dependencies: plain HTML, CSS and JavaScript. Progress is s
 
 ## Editing questions
 
-Questions live in `assets/questions.js`. Each entry:
+Questions live in `assets/questions.js` and `assets/questions-prof.js` (practice-test style: `fmt: 'prof'`, five fixed choices, optional shared setup `g` defined in `GROUPS`). Each entry:
 
 ```js
 { id: 't2-31', t: 2, s: 'Minimization', src: 'lecture',
@@ -39,4 +39,4 @@ Questions live in `assets/questions.js`. Each entry:
   keep: true }          // optional: don't shuffle choices
 ```
 
-`t` is the topic (1 Intro, 2 DFAs, 3 NFAs & regex, 4 Pumping lemma & CFGs). The practice exam draws 6 / 7 / 9 / 7 questions from topics 1–4; change `MIX` in `exam.html` to adjust. Flashcards are in `assets/cards.js`.
+`t` is the topic (1 Intro, 2 DFAs, 3 NFAs & regex, 4 Pumping lemma & CFGs). The practice exam draws 7 / 8 / 8 / 6 questions from topics 1–4, keeping shared setups together; change `MIX` in `assets/exam.js` to adjust. Older four-choice questions get “None of the above” added as option (e) automatically. Flashcards are in `assets/cards.js`.

@@ -99,13 +99,33 @@
   }
 
   /* ---------- questions ---------- */
+  // The real midterm uses five choices (a)–(e). Give every older four-choice question a fixed fifth
+  // option, "None of the above", as the prof often does, unless it already has a none/both option.
+  var BY_ID = {};
+  (window.QB || []).forEach(function (q) {
+    if (q.c.length === 4 && !q.c.some(function (c) { return /^(none|both \()/i.test(c); })) { q.c = q.c.concat(['None of the above']); q.lastFixed = true; }
+    BY_ID[q.id] = q;
+  });
   // Prepare a question instance with a (possibly shuffled) choice order.
   function instance(q) {
     var order = q.c.map(function (_, i) { return i; });
-    if (!q.keep) order = shuffle(order);
+    if (q.keep) return { id: q.id, order: order };
+    if (q.lastFixed) { var last = order.pop(); order = shuffle(order); order.push(last); }
+    else order = shuffle(order);
     return { id: q.id, order: order };
   }
-  function byId(id) { for (var i = 0; i < QB.length; i++) if (QB[i].id === id) return QB[i]; return null; }
+  function byId(id) { return BY_ID[id] || null; }
+  // Keep questions that share a setup next to each other (in their original order), at the first one's position.
+  function arrange(list) {
+    var out = [], placed = {};
+    list.forEach(function (q) {
+      if (!q.g) { out.push(q); return; }
+      if (placed[q.g]) return;
+      placed[q.g] = true;
+      QB.forEach(function (o) { if (o.g === q.g && list.indexOf(o) >= 0) out.push(o); });
+    });
+    return out;
+  }
 
   /* Render a question card.
      opts: { inst, number, total, selected (display index or null), reveal (bool), onSelect(displayIndex), showMeta } */
@@ -116,8 +136,12 @@
     if (opts.showMeta !== false) {
       meta += '<span class="tag">' + TOPICS[q.t].short + '</span><span class="tag">' + q.s + '</span>';
       if (q.src === 'lecture') meta += '<span class="tag lecture">From lecture</span>';
+      if (q.pt) meta += '<span class="tag practice">Practice test Q' + q.pt + '</span>';
     }
     card.appendChild(el('div', { class: 'qmeta' }, meta));
+    if (q.g && window.GROUPS && GROUPS[q.g]) {
+      card.appendChild(el('div', { class: 'stem' }, '<p class="stem-label">' + (opts.groupLabel || 'Shared setup') + '</p>' + GROUPS[q.g]));
+    }
     card.appendChild(el('div', { class: 'qtext', id: 'qtext-' + q.id }, q.q));
     var list = el('ul', { class: 'choices', role: 'list' });
     order.forEach(function (orig, di) {
@@ -149,15 +173,15 @@
     if (e.metaKey || e.ctrlKey || e.altKey) return -1;
     var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return -1;
     var k = e.key.toLowerCase();
-    var i = 'abcd'.indexOf(k); if (i >= 0 && k.length === 1) return i;
-    i = '1234'.indexOf(k); if (i >= 0 && k.length === 1) return i;
+    var i = 'abcde'.indexOf(k); if (i >= 0 && k.length === 1) return i;
+    i = '12345'.indexOf(k); if (i >= 0 && k.length === 1) return i;
     return -1;
   }
 
   window.App = {
     store: store, el: el, shuffle: shuffle, fmtTime: fmtTime, toast: toast,
     daysUntilExam: daysUntilExam, countdownText: countdownText, EXAM_DATE: EXAM_DATE,
-    instance: instance, byId: byId, renderQuestion: renderQuestion, isCorrect: isCorrect,
+    instance: instance, byId: byId, arrange: arrange, renderQuestion: renderQuestion, isCorrect: isCorrect,
     choiceKey: choiceKey, LETTERS: LETTERS
   };
 

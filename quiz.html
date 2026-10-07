@@ -29,7 +29,8 @@
       </div>
     </div>
     <div class="row">
-      <label class="toggle"><input type="checkbox" id="lecture-only"> Only questions from the lecture slides</label><br>
+      <label class="toggle"><input type="checkbox" id="prof-only"> Only questions in the practice-test style (5 choices, shared setups) <span class="muted small" id="prof-count"></span></label><br>
+      <label class="toggle" style="margin-top:8px"><input type="checkbox" id="lecture-only"> Only questions from the lecture slides</label><br>
       <label class="toggle" style="margin-top:8px"><input type="checkbox" id="missed-only"> Only questions I’ve missed before <span class="muted small" id="missed-count"></span></label>
     </div>
     <div class="btn-row">
@@ -46,7 +47,7 @@
     </div>
     <div class="quiz-area" id="qarea"></div>
     <div class="btn-row" style="margin-top:18px;max-width:820px;justify-content:flex-end">
-      <span class="small muted">Answer with <kbd>A</kbd>–<kbd>D</kbd>, continue with <kbd>Enter</kbd></span>
+      <span class="small muted">Answer with <kbd>A</kbd>–<kbd>E</kbd>, continue with <kbd>Enter</kbd></span>
       <button class="btn" id="next" type="button" disabled>Next question</button>
     </div>
   </section>
@@ -55,6 +56,7 @@
 </main>
 <footer id="site-foot"></footer>
 <script src="assets/questions.js"></script>
+<script src="assets/questions-prof.js"></script>
 <script src="assets/app.js"></script>
 <script>
 (function () {
@@ -84,18 +86,20 @@
       b.setAttribute('aria-pressed', 'true'); length = parseInt(b.dataset.n, 10); updatePool();
     });
   });
-  var lectureOnly = document.getElementById('lecture-only'), missedOnly = document.getElementById('missed-only');
-  lectureOnly.addEventListener('change', updatePool); missedOnly.addEventListener('change', updatePool);
+  var lectureOnly = document.getElementById('lecture-only'), missedOnly = document.getElementById('missed-only'), profOnly = document.getElementById('prof-only');
+  if (params.get('style') === 'prof') profOnly.checked = true;
+  lectureOnly.addEventListener('change', updatePool); missedOnly.addEventListener('change', updatePool); profOnly.addEventListener('change', updatePool);
 
   function pool() {
     return QB.filter(function (q) {
-      return selected[q.t] && (!lectureOnly.checked || q.src === 'lecture') && (!missedOnly.checked || missed[q.id]);
+      return selected[q.t] && (!lectureOnly.checked || q.src === 'lecture') && (!missedOnly.checked || missed[q.id]) && (!profOnly.checked || q.fmt === 'prof');
     });
   }
   function updatePool() {
     var p = pool(), n = length && length < p.length ? length : p.length;
     var mc = Object.keys(missed).length;
     document.getElementById('missed-count').textContent = mc ? '(' + mc + ')' : '(none yet)';
+    document.getElementById('prof-count').textContent = '(' + QB.filter(function (q) { return selected[q.t] && q.fmt === 'prof'; }).length + ')';
     document.getElementById('pool-count').textContent = p.length ? n + ' of ' + p.length + ' matching questions' : 'No questions match. Turn a filter off.';
     document.getElementById('start').disabled = !p.length;
   }
@@ -106,6 +110,7 @@
     var p = list || pool();
     p = App.shuffle(p);
     if (!list && length) p = p.slice(0, length);
+    p = App.arrange(p);
     items = p.map(App.instance); answers = items.map(function () { return null; }); idx = 0;
     document.getElementById('setup').hidden = true; document.getElementById('done').hidden = true; document.getElementById('run').hidden = false;
     render(); window.scrollTo(0, 0);
@@ -115,7 +120,9 @@
   function render() {
     var area = document.getElementById('qarea'); area.innerHTML = '';
     var answered = answers[idx] != null;
-    area.appendChild(App.renderQuestion({ inst: items[idx], number: idx + 1, total: items.length, selected: answers[idx], reveal: answered, onSelect: choose }));
+    var g = App.byId(items[idx].id).g, prevG = idx > 0 ? App.byId(items[idx - 1].id).g : null;
+    area.appendChild(App.renderQuestion({ inst: items[idx], number: idx + 1, total: items.length, selected: answers[idx], reveal: answered, onSelect: choose,
+      groupLabel: g && g === prevG ? 'Same setup as the previous question' : 'Setup for this question' }));
     document.getElementById('bar').style.width = ((idx + (answered ? 1 : 0)) / items.length * 100) + '%';
     document.getElementById('counter').textContent = score() + ' correct so far';
     var nx = document.getElementById('next');
@@ -164,7 +171,7 @@
       if (answers[i] == null) return;
       var q = App.byId(it.id), ok = App.isCorrect(it, answers[i]);
       var li = App.el('li', { class: 'review-item ' + (ok ? 'right' : 'wrong') });
-      li.innerHTML = '<div class="q">' + q.q + '</div><div class="ans">' + (ok ? '<b class="r">Correct:</b> ' + q.c[q.a] :
+      li.innerHTML = (q.g && window.GROUPS ? '<details class="small"><summary>Show the shared setup</summary><div class="stem" style="margin-top:8px">' + GROUPS[q.g] + '</div></details>' : '') + '<div class="q">' + q.q + '</div><div class="ans">' + (ok ? '<b class="r">Correct:</b> ' + q.c[q.a] :
         '<b class="w">You chose:</b> ' + q.c[it.order[answers[i]]] + '<br><b class="r">Answer:</b> ' + q.c[q.a]) + '</div>' +
         '<details><summary>Why</summary><p>' + q.x + '</p></details>';
       ul.appendChild(li);

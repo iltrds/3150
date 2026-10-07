@@ -26,6 +26,15 @@ window.CARDS = [
   { t: 1, f: 'Three proof types', b: 'Construction: build the object. Contradiction: assume false, derive the impossible. Induction: basis + step.' },
   { t: 1, f: 'Natural numbers N: careful', b: 'Sipser uses N = {1, 2, 3, …}. One lecture slide uses N = {0, 1, 2, …} and another {1, 2, …}. Read each question’s definition.', src: 'lecture' },
 
+  /* From the Oct 6 practice test */
+  { t: 1, src: 'practice', f: 'a ∈ 2<sup>S</sup>? {a} ∈ 2<sup>S</sup>? {a} ⊆ 2<sup>S</sup>?', b: 'Elements of 2<sup>S</sup> are subsets of S. So {a} ∈ 2<sup>S</sup> (yes), a ∈ 2<sup>S</sup> (no, a is not a set of S’s elements), {a} ⊆ 2<sup>S</sup> (no, that would need a ∈ 2<sup>S</sup>), {{a}} ⊆ 2<sup>S</sup> (yes). ∅ ∈ 2<sup>S</sup> and S ∈ 2<sup>S</sup> always.' },
+  { t: 1, src: 'practice', f: 'Checking a relation in 30 seconds', b: 'Reflexive: every (x, x) present? Symmetric: every (x, y) has (y, x)? Transitive: for every (x, y), (y, z) is (x, z) there? Check the diagonal first: one missing (x, x) rules out reflexive and equivalence.' },
+  { t: 1, src: 'practice', f: 'A − B vs B − A vs symmetric difference', b: 'A − B: in A, not in B. B − A: in B, not in A. (A − B) ∪ (B − A): in exactly one. For A = {1,2,3,4}, B = {3,4,5}: {1,2}, {5}, {1,2,5}.' },
+  { t: 3, src: 'practice', f: 'Subset construction: one step from {q₀, q₁} on input a', b: 'Union of δ(q₀, a) and δ(q₁, a), then add the ε-closure. Accepting DFA states: every subset containing an NFA accept state.' },
+  { t: 3, src: 'practice', f: '“How many states after minimizing?” for an NFA', b: '1. Subset-construct only the reachable states. 2. Initial partition: accepting vs not. 3. Refine until stable. Count the groups. (Practice test: 4 reachable, none merge: 4.)' },
+  { t: 2, src: 'practice', f: 'Initial partition for DFA minimization', b: 'Two groups: the non-accepting states Q − F and the accepting states F. Example: F = {q₂, q₃} gives {{q₀, q₁}, {q₂, q₃}}.' },
+  { t: 2, src: 'practice', f: 'Partition refinement: one round', b: 'For each state, write which group each symbol sends it to. Within a group, states with different signatures split. Stop when a round changes nothing.' },
+  { t: 4, src: 'practice', f: 'Two different parse trees for one string means…', b: 'The grammar is ambiguous. Same yield is the point; it does not make the grammar unambiguous.' },
   /* Topic 2 */
   { t: 2, f: 'DFA formal definition', b: '5-tuple (Q, Σ, δ, q₀, F). δ: Q × Σ → Q (exactly one move per state and symbol). F ⊆ Q, may be empty.' },
   { t: 2, f: 'When does a DFA accept ε?', b: 'Exactly when the start state is an accept state.' },
