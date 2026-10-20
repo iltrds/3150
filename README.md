@@ -51,6 +51,10 @@ Midterm 1 questions live in `assets/m1/questions.js`, `assets/m1/questions-prof.
 
 Choices were balanced so the correct answer is not given away by length: it is the longest choice in about 19% of questions, below the 20–25% you would expect by chance.
 
+## Cache busting
+
+Pages link assets with a version tag (`style.css?v=…`) so browsers fetch fresh copies after an update. When you change any file in `assets/`, bump the tag in every page (same value everywhere).
+
 ## Adding Midterm 2
 
 Put data in `assets/m2/`, copy the `m1/` pages into `m2/` with `data-unit="m2"` and the `m2` script paths, and list the pages in `UNITS.m2.pages` in `assets/app.js`. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).
