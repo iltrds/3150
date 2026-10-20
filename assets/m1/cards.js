@@ -35,6 +35,13 @@ window.CARDS = [
   { t: 2, src: 'practice', f: 'Initial partition for DFA minimization', b: 'Two groups: the non-accepting states Q − F and the accepting states F. Example: F = {q₂, q₃} gives {{q₀, q₁}, {q₂, q₃}}.' },
   { t: 2, src: 'practice', f: 'Partition refinement: one round', b: 'For each state, write which group each symbol sends it to. Within a group, states with different signatures split. Stop when a round changes nothing.' },
   { t: 4, src: 'practice', f: 'Two different parse trees for one string means…', b: 'The grammar is ambiguous. Same yield is the point; it does not make the grammar unambiguous.' },
+  /* From Midterm 1 itself (Oct 8) */
+  { t: 1, src: 'midterm', f: 'Domain of g when g is given by a table (rows = first argument, columns = second)', b: 'A set of pairs: {row labels} × {column labels}, in that order. g(2, 3) means row 2, column 3. Range: the set of values that appear (f with values 4, 3, 3, 2 has range {2, 3, 4}, not the tuple (2, 3, 3, 4)).' },
+  { t: 3, src: 'midterm', f: 'Name the method: NFA → DFA, and regex → NFA', b: 'NFA → DFA: the subset construction. Regex → NFA: Thompson’s construction. (DFA → regex: GNFA state elimination.)' },
+  { t: 2, src: 'midterm', f: 'How do you decide whether two finite automata are equivalent?', b: 'Convert any NFA to a DFA, minimize both, then check the minimal DFAs are the same up to renaming states. This always works, so the problem is decidable.' },
+  { t: 3, src: 'midterm', f: 'L(a*ba) ∩ L(b*a)', b: '{ba}. a*ba gives ba, aba, aaba…; b*a gives a, ba, bba…; only ba is in both.' },
+  { t: 3, src: 'midterm', f: 'What is (a*b)⁺?', b: 'One or more blocks of (some a’s, then b): every nonempty string over {a, b} that ends in b. So b, aab, abb and bbb are all members.' },
+  { t: 4, src: 'midterm', f: 'Two distinct rightmost derivations of one string means…', b: 'Ambiguous, same as two leftmost derivations or two parse trees. A single parse tree has exactly one leftmost derivation, one rightmost derivation and one yield.' },
   /* Topic 2 */
   { t: 2, f: 'DFA formal definition', b: '5-tuple (Q, Σ, δ, q₀, F). δ: Q × Σ → Q (exactly one move per state and symbol). F ⊆ Q, may be empty.' },
   { t: 2, f: 'When does a DFA accept ε?', b: 'Exactly when the start state is an accept state.' },

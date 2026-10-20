@@ -466,3 +466,30 @@ svg.ptree text.term { font: 400 17px var(--serif); fill: var(--ink); }
 .pt-banner h3 { margin: 0 0 4px; font-size: 19px; }
 .pt-banner p { margin: 0; color: var(--ink-2); font-size: 15.5px; }
 @media (max-width: 720px) { .pt-banner { grid-template-columns: 1fr; } }
+.mode-grid.five { grid-template-columns: repeat(6, 1fr); }
+.mode-grid.five .mode { grid-column: span 2; }
+.mode-grid.five .mode.featured { grid-column: span 3; }
+@media (max-width: 920px) { .mode-grid.five { grid-template-columns: 1fr; } .mode-grid.five .mode, .mode-grid.five .mode.featured { grid-column: auto; } }
+.nav a.nav-home { color: var(--ink-3); }
+@media (max-width: 1060px) and (min-width: 721px) { .nav a.nav-home { display: none; } .nav a { padding: 7px 9px; } }
+
+/* ---------- course home ---------- */
+.countdown { max-width: 62ch; }
+.unit-list { list-style: none; padding: 0; margin: 8px 0 40px; display: grid; gap: 12px; max-width: 980px; }
+.unit { display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: start; background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 22px 24px; }
+.unit .bubble { --b: 44px; font-size: 18px; }
+.unit h3 { margin: 0 0 4px; font-size: 23px; }
+.unit h3 a { color: var(--ink); text-decoration: none; }
+.unit h3 a:hover { text-decoration: underline; }
+.unit p { margin: 0; color: var(--ink-2); max-width: 64ch; }
+.unit-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px !important; font-size: 15px; font-weight: 550; }
+.unit-meta { font-size: 14px; color: var(--ink-3) !important; text-align: right; white-space: nowrap; }
+.unit.pending { background: transparent; border-style: dashed; }
+.answer-rows .row-off { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; border: 1px dashed var(--rule); border-radius: 14px; padding: 18px 22px; color: var(--ink-2); }
+.answer-rows .row-off .bubble { --b: 40px; font-size: 16px; border-color: var(--ink-3); color: var(--ink-3); }
+.answer-rows .row-off h3 { color: var(--ink-2); }
+@media (max-width: 720px) {
+  .unit { grid-template-columns: auto 1fr; padding: 18px; }
+  .unit-meta { grid-column: 2; text-align: left; white-space: normal; }
+  .answer-rows .row-off { grid-template-columns: auto 1fr; padding: 16px; }
+}

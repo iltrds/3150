@@ -2,6 +2,7 @@
 (function () {
   var N = 29, MIX = { 1: 7, 2: 8, 3: 8, 4: 6 }, VERSION = 2;
   var MODES = {
+    midterm: { label: 'Midterm 1 questions', min: 61 },
     practice: { label: 'Class practice test', min: 25 },
     real: { label: 'Real (80 min)', min: 80 },
     tight: { label: 'Tight (65 min)', min: 65 }
@@ -31,7 +32,7 @@
     var picked = [];
     [1, 2, 3, 4].forEach(function (t) {
       var m = MIX[t];
-      var pool = QB.filter(function (q) { return q.t === t && !q.pt; });
+      var pool = QB.filter(function (q) { return q.t === t && !q.pt && !q.mt; }); // real-test questions have their own modes
       var groups = {};
       pool.forEach(function (q) { if (q.g) (groups[q.g] = groups[q.g] || []).push(q); });
       var gl = App.shuffle(Object.keys(groups).map(function (k) { return groups[k]; }));
@@ -55,7 +56,8 @@
 
   function startExam() {
     var mins = minutesFor(mode);
-    var items = mode === 'practice' ? PRACTICE_TEST.map(function (id) { return App.instance(App.byId(id)); }) : draw();
+    var fixed = mode === 'practice' ? PRACTICE_TEST : mode === 'midterm' ? MIDTERM : null;
+    var items = fixed ? fixed.map(function (id) { return App.instance(App.byId(id)); }) : draw();
     S = {
       v: VERSION, mode: mode, label: mode === 'custom' ? 'Custom (' + mins + ' min)' : MODES[mode].label,
       limit: mins * 60, startedAt: Date.now(), items: items,
@@ -73,7 +75,8 @@
     var first = i, last = i;
     while (first > 0 && App.byId(S.items[first - 1].id).g === g) first--;
     while (last < count() - 1 && App.byId(S.items[last + 1].id).g === g) last++;
-    return first === last ? 'Setup for question ' + (i + 1) : 'For questions ' + (first + 1) + ' to ' + (last + 1);
+    var n = function (k) { var q = App.byId(S.items[k].id); return S.mode === 'midterm' && q.mt ? q.mt : k + 1; };
+    return first === last ? 'Setup for question ' + n(i) : 'For questions ' + n(first) + ' to ' + n(last);
   }
 
   /* ---------- running ---------- */
@@ -124,7 +127,8 @@
   function render() {
     var area = document.getElementById('qarea'); area.innerHTML = '';
     var i = S.current;
-    area.appendChild(App.renderQuestion({ inst: S.items[i], number: i + 1, total: count(), selected: S.answers[i], reveal: false, showMeta: false, groupLabel: groupLabel(i), onSelect: function (di) { setAnswer(i, di); } }));
+    var q = App.byId(S.items[i].id), num = S.mode === 'midterm' && q.mt ? q.mt : i + 1;
+    area.appendChild(App.renderQuestion({ inst: S.items[i], number: num, total: S.mode === 'midterm' ? null : count(), selected: S.answers[i], reveal: false, showMeta: false, groupLabel: groupLabel(i), onSelect: function (di) { setAnswer(i, di); } }));
     var fb = document.getElementById('flag');
     fb.setAttribute('aria-pressed', S.flags[i] ? 'true' : 'false');
     fb.textContent = S.flags[i] ? 'Flagged' : 'Flag for review';
@@ -154,7 +158,8 @@
     var ol = document.getElementById('sheet-list'); ol.innerHTML = '';
     S.items.forEach(function (it, i) {
       var li = App.el('li');
-      var num = App.el('button', { class: 'num', type: 'button', 'aria-label': 'Go to question ' + (i + 1) }, String(i + 1));
+      var qn = S.mode === 'midterm' && App.byId(it.id).mt ? App.byId(it.id).mt : i + 1;
+      var num = App.el('button', { class: 'num', type: 'button', 'aria-label': 'Go to question ' + qn }, String(qn));
       num.addEventListener('click', function () { go(i); });
       li.appendChild(num);
       for (var d = 0; d < 5; d++) {
@@ -239,9 +244,9 @@
     var target = R.limit / n;
     var slowIdx = R.times.map(function (t, i) { return [t, i]; }).sort(function (a, b) { return b[0] - a[0]; }).slice(0, Math.min(5, n)).map(function (p) { return p[1]; });
     var verdict = pct >= 80 ? 'Strong result.' : pct >= 65 ? 'Solid, with gaps to close.' : 'Worth another round on the weak topics below.';
-    var isPT = R.mode === 'practice';
+    var isPT = R.mode === 'practice' || R.mode === 'midterm';
 
-    var h = '<h1 style="font-size:clamp(30px,4vw,44px)">' + (isPT ? 'Practice test results' : 'Exam results') + '</h1>' +
+    var h = '<h1 style="font-size:clamp(30px,4vw,44px)">' + (R.mode === 'midterm' ? 'Midterm 1 questions: results' : R.mode === 'practice' ? 'Practice test results' : 'Exam results') + '</h1>' +
       '<div class="result-score">' + score + '/' + n + '</div><p class="lede">' + pct + '%. ' + verdict + '</p>' +
       '<div class="stat-row"><div><b>' + App.fmtTime(used) + '</b>time used of ' + App.fmtTime(R.limit) + '</div>' +
       '<div><b>' + App.fmtTime(used / n) + '</b>average per question</div>' +
@@ -257,7 +262,7 @@
     h += '<div class="panel"><h3>Where your time went</h3><p class="small muted">Target was ' + App.fmtTime(target) + ' per question. Your slowest:</p><ul class="history-list">';
     slowIdx.forEach(function (i) {
       var q = App.byId(R.items[i].id), ok = App.isCorrect(R.items[i], R.answers[i]);
-      h += '<li><span>Q' + (i + 1) + ' <span class="muted">' + TOPICS[q.t].short + ', ' + q.s + '</span></span><span><span class="time-pill' + (R.times[i] > target * 1.5 ? ' slow' : '') + '">' + App.fmtTime(R.times[i]) + '</span> ' + (ok ? '<b style="color:var(--form)">right</b>' : '<b style="color:var(--red)">wrong</b>') + '</span></li>';
+      h += '<li><span>Q' + qnum(R, i) + ' <span class="muted">' + TOPICS[q.t].short + ', ' + q.s + '</span></span><span><span class="time-pill' + (R.times[i] > target * 1.5 ? ' slow' : '') + '">' + App.fmtTime(R.times[i]) + '</span> ' + (ok ? '<b style="color:var(--form)">right</b>' : '<b style="color:var(--red)">wrong</b>') + '</span></li>';
     });
     h += '</ul></div></div>';
     h += '<div class="btn-row" style="margin:28px 0 0"><button class="btn" id="again" type="button">' + (isPT ? 'Take a full 29-question exam' : 'New practice exam') + '</button><a class="btn secondary" href="quiz.html?style=prof">Quiz in the test style</a></div>';
@@ -279,7 +284,7 @@
         var correct = ok ? '' : '<br><b class="r">Answer:</b> (' + App.LETTERS[it.order.indexOf(q.a)].toLowerCase() + ') ' + q.c[q.a];
         var stem = (q.g && q.g !== lastG && window.GROUPS && GROUPS[q.g]) ? '<div class="stem"><p class="stem-label">Shared setup</p>' + GROUPS[q.g] + '</div>' : '';
         lastG = q.g || null;
-        li.innerHTML = '<div class="qmeta" style="margin-bottom:6px"><span>Question ' + (i + 1) + '</span><span class="tag">' + TOPICS[q.t].short + '</span>' + (q.src === 'lecture' ? '<span class="tag lecture">From lecture</span>' : '') + (R.flags[i] ? '<span class="tag" style="background:var(--hi-2)">Flagged</span>' : '') + '<span class="time-pill' + (R.times[i] > target * 1.5 ? ' slow' : '') + '">' + App.fmtTime(R.times[i]) + '</span></div>' +
+        li.innerHTML = '<div class="qmeta" style="margin-bottom:6px"><span>Question ' + qnum(R, i) + '</span><span class="tag">' + TOPICS[q.t].short + '</span>' + (q.src === 'lecture' ? '<span class="tag lecture">From lecture</span>' : '') + (R.flags[i] ? '<span class="tag" style="background:var(--hi-2)">Flagged</span>' : '') + '<span class="time-pill' + (R.times[i] > target * 1.5 ? ' slow' : '') + '">' + App.fmtTime(R.times[i]) + '</span></div>' +
           stem + '<div class="q">' + q.q + '</div><div class="ans">' + mine + correct + '</div><details' + (ok ? '' : ' open') + '><summary>Why</summary><p>' + q.x + '</p></details>';
         ul.appendChild(li);
       });
@@ -299,6 +304,8 @@
     });
     window.scrollTo(0, 0);
   }
+  // Real-midterm questions keep their exam numbers (8–29) in the results.
+  function qnum(R, i) { var q = App.byId(R.items[i].id); return R.mode === 'midterm' && q.mt ? q.mt : i + 1; }
   function weakest(bt) { var w = 1, wp = 2; [1, 2, 3, 4].forEach(function (t) { var v = bt[t]; if (v && v[0] / v[1] < wp) { wp = v[0] / v[1]; w = t; } }); return w; }
 
   /* ---------- resume ---------- */
