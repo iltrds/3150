@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261020b">
+<link rel="stylesheet" href="../assets/style.css?v=20261025a">
 </head>
 <body data-unit="m1">
 <header id="site-head"></header>
@@ -56,10 +56,10 @@
   <section id="done" hidden class="quiz-area"></section>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m1/questions.js?v=20261020b"></script>
-<script src="../assets/m1/questions-prof.js?v=20261020b"></script>
-<script src="../assets/m1/midterm.js?v=20261020b"></script>
-<script src="../assets/app.js?v=20261020b"></script>
+<script src="../assets/m1/questions.js?v=20261025a"></script>
+<script src="../assets/m1/questions-prof.js?v=20261025a"></script>
+<script src="../assets/m1/midterm.js?v=20261025a"></script>
+<script src="../assets/app.js?v=20261025a"></script>
 <script>
 (function () {
   var params = new URLSearchParams(location.search);
@@ -70,13 +70,13 @@
   var missed = App.store.get('missed', {}); // id -> true
 
   var chips = document.getElementById('topic-chips');
-  [1, 2, 3, 4].forEach(function (t) {
+  Object.keys(TOPICS).map(Number).forEach(function (t) {
     var n = QB.filter(function (q) { return q.t === t; }).length;
     var b = App.el('button', { class: 'chip', type: 'button', 'aria-pressed': selected[t] ? 'true' : 'false' },
       '<span class="bubble" aria-hidden="true">' + t + '</span>' + TOPICS[t].name + ' <span class="count">' + n + '</span>');
     b.addEventListener('click', function () {
       selected[t] = !selected[t];
-      if (![1, 2, 3, 4].some(function (k) { return selected[k]; })) selected[t] = true;
+      if (!Object.keys(TOPICS).some(function (k) { return selected[k]; })) selected[t] = true;
       b.setAttribute('aria-pressed', selected[t] ? 'true' : 'false');
       updatePool();
     });
@@ -88,22 +88,25 @@
       b.setAttribute('aria-pressed', 'true'); length = parseInt(b.dataset.n, 10); updatePool();
     });
   });
+  // Filters are optional: a unit's page only includes the ones that apply to it.
   var lectureOnly = document.getElementById('lecture-only'), missedOnly = document.getElementById('missed-only'), profOnly = document.getElementById('prof-only'), mtOnly = document.getElementById('mt-only');
-  if (params.get('style') === 'prof') profOnly.checked = true;
-  if (params.get('source') === 'midterm') mtOnly.checked = true;
-  [lectureOnly, missedOnly, profOnly, mtOnly].forEach(function (x) { x.addEventListener('change', updatePool); });
+  function on(x) { return !!(x && x.checked); }
+  if (profOnly && params.get('style') === 'prof') profOnly.checked = true;
+  if (mtOnly && params.get('source') === 'midterm') mtOnly.checked = true;
+  [lectureOnly, missedOnly, profOnly, mtOnly].forEach(function (x) { if (x) x.addEventListener('change', updatePool); });
 
   function pool() {
     return QB.filter(function (q) {
-      return selected[q.t] && (!lectureOnly.checked || q.src === 'lecture') && (!missedOnly.checked || missed[q.id]) && (!profOnly.checked || q.fmt === 'prof') && (!mtOnly.checked || q.mt);
+      return selected[q.t] && (!on(lectureOnly) || q.src === 'lecture') && (!on(missedOnly) || missed[q.id]) && (!on(profOnly) || q.fmt === 'prof') && (!on(mtOnly) || q.mt);
     });
   }
   function updatePool() {
     var p = pool(), n = length && length < p.length ? length : p.length;
     var mc = Object.keys(missed).length;
     document.getElementById('missed-count').textContent = mc ? '(' + mc + ')' : '(none yet)';
-    document.getElementById('prof-count').textContent = '(' + QB.filter(function (q) { return selected[q.t] && q.fmt === 'prof'; }).length + ')';
-    document.getElementById('mt-count').textContent = '(' + QB.filter(function (q) { return selected[q.t] && q.mt; }).length + ')';
+    var pc = document.getElementById('prof-count'), mc2 = document.getElementById('mt-count');
+    if (pc) pc.textContent = '(' + QB.filter(function (q) { return selected[q.t] && q.fmt === 'prof'; }).length + ')';
+    if (mc2) mc2.textContent = '(' + QB.filter(function (q) { return selected[q.t] && q.mt; }).length + ')';
     document.getElementById('pool-count').textContent = p.length ? n + ' of ' + p.length + ' matching questions' : 'No questions match. Turn a filter off.';
     document.getElementById('start').disabled = !p.length;
   }

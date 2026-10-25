@@ -4,7 +4,7 @@ A static study site for CIS*3150 Theory of Computation (Fall 2026), organized by
 
 - `index.html`: course home listing each unit.
 - `m1/`: **Midterm 1** (written Thursday, October 8, 2026), kept for final exam review.
-- `m2/`: **Midterm 2**, in progress.
+- `m2/`: **Midterm 2**, built lecture by lecture (currently Lectures 6–7).
 
 The old root URLs (`guide.html`, `quiz.html`, …) redirect to `m1/`.
 
@@ -51,10 +51,17 @@ Midterm 1 questions live in `assets/m1/questions.js`, `assets/m1/questions-prof.
 
 Choices were balanced so the correct answer is not given away by length: it is the longest choice in about 19% of questions, below the 20–25% you would expect by chance.
 
+## Midterm 2
+
+- **Study guide** (`m2/guide.html`): CFG design and ambiguity (Sipser 2.3, G₁–G₄, dangling else), nullable variables, ε-rule removal and Chomsky normal form, pushdown automata (M₁ for 0ⁿ1ⁿ, instantaneous descriptions, DPDAs), and predictive parsing (left recursion, left factoring, FIRST/FOLLOW, the LL(1) table and a full parse trace).
+- **Flashcards** (`m2/cards.html`): 46 cards.
+- **Topic quizzes** (`m2/quiz.html`): 77 five-choice questions with shared setups; answers checked by computation (FIRST/FOLLOW and LL(1) tables, nullable sets, parse-tree counts, PDA runs). Correct answers are spread evenly over (a)–(e) and are uniquely the longest choice in only 15% of questions.
+- **Practice exam** (`m2/exam.html`): 29 questions (8 / 6 / 7 / 8 across the four topics), in Midterm 1's format until the Midterm 2 announcement. Change `EXAM_CONFIG` in `assets/m2/questions.js` to adjust.
+
 ## Cache busting
 
 Pages link assets with a version tag (`style.css?v=…`) so browsers fetch fresh copies after an update. When you change any file in `assets/`, bump the tag in every page (same value everywhere).
 
-## Adding Midterm 2
+## Adding to Midterm 2
 
-Put data in `assets/m2/`, copy the `m1/` pages into `m2/` with `data-unit="m2"` and the `m2` script paths, and list the pages in `UNITS.m2.pages` in `assets/app.js`. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).
+Midterm 2 data lives in `assets/m2/` (`questions.js` also sets `TOPICS`, `GROUPS` and `EXAM_CONFIG`; `cards.js`). Add new lectures' questions there and new sections to `m2/guide.html`. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).

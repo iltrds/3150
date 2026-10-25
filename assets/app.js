@@ -7,8 +7,8 @@
     // Midterm 1 keeps the original storage prefix so earlier progress carries over.
     m1: { id: 'm1', name: 'Midterm 1', date: new Date(2026, 9, 8), prefix: 'cis3150:', pages: UNIT_PAGES,
           foot: 'Midterm 1 was written Thu Oct 8, 2026. Based on Sipser, <i>Introduction to the Theory of Computation</i>, the course lecture slides, the Oct 6 practice test and questions from the midterm itself.' },
-    m2: { id: 'm2', name: 'Midterm 2', date: null, prefix: 'cis3150:m2:', pages: [['index.html', 'Overview']],
-          foot: 'Midterm 2 material is being added as the course goes on.' }
+    m2: { id: 'm2', name: 'Midterm 2', date: null, prefix: 'cis3150:m2:', pages: UNIT_PAGES,
+          foot: 'Midterm 2 material is added lecture by lecture. Based on Sipser §2.1–2.2, Aho §2.4 and the course lecture slides.' }
   };
   var unitId = (document.body && document.body.getAttribute('data-unit')) || '';
   var UNIT = UNITS[unitId] || null;

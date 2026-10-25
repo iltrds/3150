@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midterm 2 study guide — CIS*3150</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2333363B'/%3E%3Ctext x='16' y='21' font-size='14' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css?v=20261025a">
+<style>
+  .diagram svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 1.2em 0 .6em; }
+  .diagram .st { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.4; }
+  .diagram .acc { fill: none; stroke: var(--ink-2); stroke-width: 1.2; }
+  .diagram .sn { font: 600 15px var(--serif); fill: var(--ink); }
+  .diagram .edge { stroke: var(--ink-2); stroke-width: 1.4; fill: none; }
+  .diagram .lab { font: 500 13px var(--sans); fill: var(--form); }
+  .prose pre.g { font-size: 17px; }
+  .trace td:first-child, .trace td:nth-child(2) { font-family: var(--serif); white-space: nowrap; }
+</style>
+</head>
+<body data-unit="m2">
+<header id="site-head"></header>
+<main class="wrap">
+  <h1 style="font-size:clamp(32px,4.6vw,48px)">Midterm 2 study guide</h1>
+  <p class="lede" style="margin-bottom:36px">Lectures 6 and 7 so far: designing grammars and ambiguity, simplifying grammars and Chomsky normal form, pushdown automata, and predictive (LL(1)) parsing. New lectures will be added as they come.</p>
+
+  <div class="guide-layout">
+    <nav class="toc" aria-label="Contents">
+      <ol id="toc"></ol>
+    </nav>
+
+    <article class="prose" id="guide">
+
+<h2 id="glance">Covered so far</h2>
+<p>The Midterm 2 topic list has not been announced, so this guide follows the lectures. The practice exam uses Midterm 1’s format (29 five-choice questions in 80 minutes) until the announcement says otherwise.</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>#</th><th>Topic</th><th>Lecture</th><th>Reading</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><a href="#t1">CFG design and ambiguity</a></td><td>L06 Context-free grammars, part 2</td><td>Sipser 2.1 (Ex. 2.3, 2.8, 2.27)</td></tr>
+    <tr><td>2</td><td><a href="#t2">Simplifying grammars and CNF</a></td><td>L06</td><td>Sipser 2.1 (Chomsky normal form)</td></tr>
+    <tr><td>3</td><td><a href="#t3">Pushdown automata</a></td><td>L07 PDAs</td><td>Sipser 2.2</td></tr>
+    <tr><td>4</td><td><a href="#t4">Predictive parsing</a></td><td>L07 Predictive parsers</td><td>Aho, Sethi &amp; Ullman 2.4 and pp. 176–190</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ======================= TOPIC 1 ======================= -->
+<h2 id="t1">Topic 1: Designing grammars and ambiguity</h2>
+<p>Designing a CFG takes some creativity, but most grammars are built from a few patterns. Ambiguity is a property of a grammar, decided by counting parse trees.</p>
+
+<h3 id="t1-design">Design patterns</h3>
+<table>
+  <thead><tr><th>Pattern</th><th>Language</th><th>Grammar</th></tr></thead>
+  <tbody>
+    <tr><td>Union</td><td>{0ⁿ1ⁿ} ∪ {1ⁿ0ⁿ}, n ≥ 0</td><td>S → S₁ | S₂,  S₁ → 0S₁1 | ε,  S₂ → 1S₂0 | ε</td></tr>
+    <tr><td>Concatenation of independent parts</td><td>aⁿbⁿcᵐdᵐ, n, m ≥ 1</td><td>S → AB,  A → aAb | ab,  B → cBd | cd</td></tr>
+    <tr><td>Nesting, outside in</td><td>aⁿbᵐcᵐdⁿ, n, m ≥ 1</td><td>S → aSd | aBd,  B → bBc | bc</td></tr>
+    <tr><td>Mirror</td><td>Palindromes over {a, b}</td><td>S → aSa | bSb | a | b | ε</td></tr>
+    <tr><td>Balance counter</td><td>Equal a’s and b’s, nonempty</td><td>S → aB | bA,  A → a | aS | bAA,  B → b | bS | aBB</td></tr>
+    <tr><td>Balance counter</td><td>One more b than a</td><td>S → bB | aSS,  B → ε | aS | bA,  A → aB | bAA</td></tr>
+  </tbody>
+</table>
+<p>For the counter grammars, read each variable as a debt: A derives strings with one extra a, B strings with one extra b. Derivation of bab in the one-more-b grammar (rules 1, 4, 1, 3): S ⇒ bB ⇒ baS ⇒ babB ⇒ bab.</p>
+<div class="callout"><span class="label">Watch the boundaries</span>
+<ul>
+  <li>For aⁿbᵐcᵐdⁿ with n ≥ 1, S → aSd | B lets n be 0 (it generates bc). The base must be aBd.</li>
+  <li>S → 0S1 | 1S0 | ε is not {0ⁿ1ⁿ} ∪ {1ⁿ0ⁿ}: it mixes the patterns and generates 0101. Keep the parts in separate variables.</li>
+</ul></div>
+
+<h3 id="t1-sipser">Sipser Exercise 2.3, worked</h3>
+<pre class="g">R → XRX | S
+S → aTb | bTa
+T → XTX | X | ε
+X → a | b</pre>
+<table>
+  <thead><tr><th>Question</th><th>Answer</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Variables, terminals, start</td><td>{R, S, T, X}; {a, b}; R</td><td>Variables are the left-hand sides</td></tr>
+    <tr><td>T ⇒ T</td><td>False</td><td>⇒ is exactly one step, and every T-rule changes T</td></tr>
+    <tr><td>T ⇒* T</td><td>True</td><td>⇒* allows zero steps</td></tr>
+    <tr><td>T ⇒ aba</td><td>False</td><td>One step only gives XTX, X or ε</td></tr>
+    <tr><td>T ⇒* aba, XXX ⇒* aba</td><td>True</td><td>T ⇒ XTX ⇒ XXX ⇒* aba</td></tr>
+    <tr><td>X ⇒* aba</td><td>False</td><td>X only gives a or b</td></tr>
+    <tr><td>T ⇒* XX, T ⇒* XXX</td><td>True</td><td>T ⇒ XTX, then T → ε or T → X</td></tr>
+    <tr><td>S ⇒* ε</td><td>False</td><td>S always produces at least a…b or b…a</td></tr>
+    <tr><td>In L(G)</td><td>ab, ba, aab, abb</td><td>Not in L(G): ε, a, aa, aba, abba</td></tr>
+  </tbody>
+</table>
+<p><strong>L(G) is every non-palindrome</strong> over {a, b}: S → aTb | bTa forces a mismatched pair at mirrored positions, T fills any middle, and R → XRX adds the same number of arbitrary symbols on each side.</p>
+
+<h3 id="t1-amb">Ambiguity</h3>
+<p>A grammar is <strong>ambiguous</strong> if some string has two distinct leftmost derivations, or equivalently two distinct parse trees. Every derivable string has both a leftmost and a rightmost derivation, so that alone proves nothing.</p>
+<p>E → E + E | E * E | (E) | x | y | z gives x + y * z two trees, so it is ambiguous:</p>
+<div class="tree-row" id="tree-xyz"></div>
+<p>S → AS | a | b, A → SS | ab gives abb two trees:</p>
+<div class="tree-row" id="tree-abb"></div>
+<p><strong>Why it matters:</strong> a compiler gets meaning from the parse tree, so two trees mean two meanings (multiply first or add first). Sipser 2.8: “the girl touches the boy with the flower” can mean she uses the flower, or he has it. Sipser 2.27: in “if c then if c then s else s” the else can attach to either if (the <strong>dangling else</strong>).</p>
+<p><strong>Removing ambiguity</strong> (when possible): give each precedence level its own variable, E → E + T | T, T → T * F | F, F → (E) | x | y | z, so * is always built below +.</p>
+
+<h3 id="t1-g14">Which of G₁–G₄ are ambiguous?</h3>
+<table>
+  <thead><tr><th>Grammar</th><th>Ambiguous?</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>G₁: S → SS | AB,  A → Aa | a,  B → Bb | b</td><td>Yes</td><td>S → SS groups three blocks two ways: ababab = (ab ab) ab or ab (ab ab)</td></tr>
+    <tr><td>G₂: S → (L) | a,  L → LS | S</td><td>No</td><td>The list inside parentheses is built in one fixed order</td></tr>
+    <tr><td>G₃: S → AA,  A → aA | b</td><td>No</td><td>A generates a*b, so the first A must end at the first b</td></tr>
+    <tr><td>G₄: S → SS | (S) | x | y | z</td><td>Yes</td><td>xyz = (xy)z or x(yz)</td></tr>
+  </tbody>
+</table>
+<p class="small muted">Checked by counting parse trees for every string up to length 6.</p>
+<p class="practice-link"><a href="quiz.html?topic=1">Quiz Topic 1</a> or <a href="cards.html?topic=1">drill its flashcards</a>.</p>
+
+<!-- ======================= TOPIC 2 ======================= -->
+<h2 id="t2">Topic 2: Simplifying grammars and Chomsky normal form</h2>
+
+<h3 id="t2-null">Nullable variables and removing ε-rules</h3>
+<ul>
+  <li>A is <strong>nullable</strong> if A → ε is a rule, or A → B₁…Bₙ with every Bᵢ nullable. Nothing else is. Equivalently, A ⇒* ε.</li>
+  <li>To remove ε-rules: for each rule, add every version with some nullable variables deleted (never an empty right side), then drop the ε-rules. Keep S → ε only if S itself was nullable.</li>
+</ul>
+<p><strong>Worked example (lecture).</strong></p>
+<table>
+  <thead><tr><th>Original</th><th>After removing ε-rules</th></tr></thead>
+  <tbody>
+    <tr><td>S → AACD</td><td>S → AACD | ACD | CD | AAC | AC | C</td></tr>
+    <tr><td>A → aAb | ε</td><td>A → aAb | ab</td></tr>
+    <tr><td>C → aC | a</td><td>C → aC | a</td></tr>
+    <tr><td>D → aDa | bDb | ε</td><td>D → aDa | bDb | aa | bb</td></tr>
+  </tbody>
+</table>
+<p>Nullable = {A, D}. C always produces an a, so C stays in every S-rule and S is not nullable (no S → ε). The new S → C is a <strong>unit rule</strong>; removing it gives S → … | aC | a.</p>
+
+<h3 id="t2-cnf">Chomsky normal form</h3>
+<p>Every rule is <strong>A → BC</strong> or <strong>A → a</strong>, where B and C are not the start variable; S → ε is also allowed. Every context-free language has a CNF grammar (Sipser Theorem 2.9), and a CNF derivation of a string of length n ≥ 1 takes exactly 2n − 1 steps.</p>
+<ol>
+  <li>Eliminate ε-rules.</li>
+  <li>Eliminate unit rules (A → B): give A all of B’s right sides.</li>
+  <li>Make each right side a single terminal or only variables: replace a terminal a inside a longer rule with a new Xₐ → a.</li>
+  <li>Split rules with three or more variables into pairs.</li>
+</ol>
+<p><strong>Worked example (lecture):</strong> S → ABC | c, A → BC | Aa | a, B → b, C → c. There are no ε-rules or unit rules. A → BC, A → a, B → b, C → c and S → c are already fine.</p>
+<table>
+  <thead><tr><th>Rule</th><th>Problem</th><th>CNF version</th></tr></thead>
+  <tbody>
+    <tr><td>A → Aa</td><td>Terminal in a long rule</td><td>A → AXₐ,  Xₐ → a</td></tr>
+    <tr><td>S → ABC</td><td>Three variables</td><td>S → AD,  D → BC  (or S → DC, D → AB)</td></tr>
+  </tbody>
+</table>
+<p>Result: S → AD | c,  D → BC,  A → BC | AXₐ | a,  B → b,  C → c,  Xₐ → a.</p>
+<p class="practice-link"><a href="quiz.html?topic=2">Quiz Topic 2</a> or <a href="cards.html?topic=2">drill its flashcards</a>.</p>
+
+<!-- ======================= TOPIC 3 ======================= -->
+<h2 id="t3">Topic 3: Pushdown automata</h2>
+<p>A PDA is an NFA with a stack. The stack gives unbounded memory, and PDAs recognize exactly the context-free languages.</p>
+
+<h3 id="t3-def">Formal definition</h3>
+<p>A PDA is a 6-tuple M = (Q, Σ, Γ, δ, q₀, F): states, input alphabet, <strong>stack alphabet Γ</strong>, transition function, start state, accept states.</p>
+<pre>δ: Q × Σ_ε × Γ_ε → P(Q × Γ_ε)</pre>
+<p>Given a state, an input symbol (or ε) and a stack symbol (or ε), δ returns every possible (next state, symbol to push). The lecture writes the pair as P(Γ_ε × Q); the meaning is the same. On a diagram, <strong>a, b → c</strong> means read a, pop b, push c, and any of them may be ε.</p>
+
+<h3 id="t3-m1">Example: M₁ for {0ⁿ1ⁿ | n ≥ 0}</h3>
+<div class="diagram" role="img" aria-label="State diagram of PDA M1: q1 to q2 on epsilon, epsilon to dollar; q2 loops on 0, epsilon to 0; q2 to q3 on 1, 0 to epsilon; q3 loops on 1, 0 to epsilon; q3 to q4 on epsilon, dollar to epsilon. q1 and q4 accept.">
+<svg viewBox="0 0 560 300" aria-hidden="true">
+  <defs><marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--ink-2)"/></marker></defs>
+  <path class="edge" d="M24 70H62" marker-end="url(#pa)"/>
+  <circle class="st" cx="100" cy="70" r="30"/><circle class="acc" cx="100" cy="70" r="24"/><text class="sn" x="100" y="75" text-anchor="middle">q₁</text>
+  <circle class="st" cx="400" cy="70" r="30"/><text class="sn" x="400" y="75" text-anchor="middle">q₂</text>
+  <circle class="st" cx="400" cy="230" r="30"/><text class="sn" x="400" y="235" text-anchor="middle">q₃</text>
+  <circle class="st" cx="100" cy="230" r="30"/><circle class="acc" cx="100" cy="230" r="24"/><text class="sn" x="100" y="235" text-anchor="middle">q₄</text>
+  <path class="edge" d="M130 70H368" marker-end="url(#pa)"/><text class="lab" x="250" y="60" text-anchor="middle">ε, ε → $</text>
+  <path class="edge" d="M422 50C445 10 480 40 429 62" marker-end="url(#pa)"/><text class="lab" x="470" y="28">0, ε → 0</text>
+  <path class="edge" d="M400 100V198" marker-end="url(#pa)"/><text class="lab" x="410" y="155">1, 0 → ε</text>
+  <path class="edge" d="M422 250C445 290 480 260 429 238" marker-end="url(#pa)"/><text class="lab" x="470" y="282">1, 0 → ε</text>
+  <path class="edge" d="M370 230H132" marker-end="url(#pa)"/><text class="lab" x="250" y="220" text-anchor="middle">ε, $ → ε</text>
+</svg>
+</div>
+<p>Q = {q₁, q₂, q₃, q₄}, Σ = {0, 1}, Γ = {0, $}, F = {q₁, q₄}. Push $, push a 0 per 0, pop a 0 per 1, and accept when $ shows again. <strong>$ marks the bottom</strong> because a PDA cannot test for an empty stack directly. <strong>q₁ accepts</strong> so that ε (n = 0) is in the language.</p>
+<p><strong>Instantaneous descriptions</strong> (state, unread input, stack top first). If δ(q, a, Z) contains (p, β), then (q, aw, Zα) ⊢ (p, w, βα). On 0011:</p>
+<pre>(q₁, 0011, ε) ⊢ (q₂, 0011, $) ⊢ (q₂, 011, 0$) ⊢ (q₂, 11, 00$)
+             ⊢ (q₃, 1, 0$) ⊢ (q₃, ε, $) ⊢ (q₄, ε, ε)   accept</pre>
+<p>001 is rejected: after its only 1 the stack is 0$, so ε, $ → ε never fires. 0 and 011 are rejected too; 01 and 000111 are accepted.</p>
+
+<h3 id="t3-dpda">Deterministic PDAs, shorthand, and power</h3>
+<ul>
+  <li>A PDA is <strong>deterministic</strong> if no δ(q, a, Z) (a ∈ Σ ∪ {ε}) has more than one element, and whenever δ(q, ε, Z) is nonempty, δ(q, a, Z) is empty for every a ∈ Σ.</li>
+  <li>DPDAs recognize only some CFLs: {wwᴿ | w ∈ {a, b}*} needs a nondeterministic guess of the middle. So PDA ≠ DPDA, and “PDA” means nondeterministic unless stated.</li>
+  <li><strong>Pushing several symbols:</strong> (r, xyz) ∈ δ(q, a, s) is shorthand for a chain through new states. Only the first move reads input; the remaining ε, ε → … moves push one symbol each.</li>
+  <li><strong>Power:</strong> PDAs ≡ CFGs. Every regular language is context-free (a DFA is a PDA that ignores its stack), and {0ⁿ1ⁿ} shows the inclusion is strict.</li>
+</ul>
+<p class="practice-link"><a href="quiz.html?topic=3">Quiz Topic 3</a> or <a href="cards.html?topic=3">drill its flashcards</a>.</p>
+
+<!-- ======================= TOPIC 4 ======================= -->
+<h2 id="t4">Topic 4: Predictive (LL(1)) parsing</h2>
+<p>A predictive parser builds a leftmost derivation top down, choosing each production by looking at one input symbol. It needs a grammar with no left recursion and no common prefixes, plus FIRST and FOLLOW sets to fill its table.</p>
+
+<h3 id="t4-lr">Left recursion and left factoring</h3>
+<ul>
+  <li>A grammar is <strong>left recursive</strong> if it has A → Aα. A recursive-descent parser for E → E + T | T calls E() again before reading any token, forever, until the stack overflows.</li>
+  <li><strong>Remove it:</strong> A → Aα | β becomes A → βA′, A′ → αA′ | ε. So E → E + T | T becomes E → TE′, E′ → +TE′ | ε.</li>
+  <li><strong>Left factoring:</strong> A → αβ₁ | αβ₂ becomes A → αA′, A′ → β₁ | β₂. The dangling-else grammar becomes stmt → if expr then stmt stmt′, stmt′ → else stmt | ε.</li>
+</ul>
+<pre class="g">E  → T E′
+E′ → + T E′ | ε
+T  → F T′
+T′ → * F T′ | ε
+F  → ( E ) | id</pre>
+
+<h3 id="t4-ff">FIRST and FOLLOW</h3>
+<p><strong>FIRST(α)</strong>: terminals that can begin a string derived from α, plus ε if α ⇒* ε. <strong>FOLLOW(A)</strong>: terminals that can appear immediately after A in some sentential form.</p>
+<ol>
+  <li>$ ∈ FOLLOW(S) for the start symbol S.</li>
+  <li>For A → αBβ, everything in FIRST(β) except ε is in FOLLOW(B).</li>
+  <li>For A → αB, or A → αBβ with β ⇒* ε, everything in FOLLOW(A) is in FOLLOW(B).</li>
+</ol>
+<table>
+  <thead><tr><th>Symbol</th><th>FIRST</th><th>FOLLOW</th></tr></thead>
+  <tbody>
+    <tr><td>E</td><td>{(, id}</td><td>{), $}</td></tr>
+    <tr><td>E′</td><td>{+, ε}</td><td>{), $}</td></tr>
+    <tr><td>T</td><td>{(, id}</td><td>{+, ), $}</td></tr>
+    <tr><td>T′</td><td>{*, ε}</td><td>{+, ), $}</td></tr>
+    <tr><td>F</td><td>{(, id}</td><td>{+, *, ), $}</td></tr>
+  </tbody>
+</table>
+<p>FOLLOW(T) gets + from FIRST(E′), and because E′ ⇒ ε it also gets FOLLOW(E) = {), $}. FOLLOW(F) gets * from FIRST(T′) and FOLLOW(T) because T′ ⇒ ε.</p>
+
+<h3 id="t4-table">The parsing table</h3>
+<p>For each production A → α: add it to M[A, a] for every terminal a ∈ FIRST(α); if ε ∈ FIRST(α), also add it to M[A, b] for every b ∈ FOLLOW(A). Blank cells are errors. If any cell gets two productions, the grammar is <strong>not LL(1)</strong> (S → aA | aB puts both in M[S, a]; left factoring fixes it).</p>
+<div class="table-scroll" id="ll-table"></div>
+<p><strong>LL(1)</strong>: scan Left to right, build a Leftmost derivation, look 1 symbol ahead. LL(k) looks k symbols ahead.</p>
+
+<h3 id="t4-trace">Parsing id + id * id</h3>
+<p>Start with E$ on the stack. Nonterminal on top: replace it using M[top, input]. Matching terminal on top: pop it and advance. Both $: accept.</p>
+<div class="table-scroll">
+<table class="trace">
+  <thead><tr><th>Stack (top first)</th><th>Input</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr><td>E$</td><td>id + id * id $</td><td>E → TE′</td></tr>
+    <tr><td>TE′$</td><td>id + id * id $</td><td>T → FT′</td></tr>
+    <tr><td>FT′E′$</td><td>id + id * id $</td><td>F → id</td></tr>
+    <tr><td>idT′E′$</td><td>id + id * id $</td><td>match id</td></tr>
+    <tr><td>T′E′$</td><td>+ id * id $</td><td>T′ → ε</td></tr>
+    <tr><td>E′$</td><td>+ id * id $</td><td>E′ → +TE′</td></tr>
+    <tr><td>+TE′$</td><td>+ id * id $</td><td>match +</td></tr>
+    <tr><td>TE′$</td><td>id * id $</td><td>T → FT′</td></tr>
+    <tr><td>FT′E′$</td><td>id * id $</td><td>F → id</td></tr>
+    <tr><td>idT′E′$</td><td>id * id $</td><td>match id</td></tr>
+    <tr><td>T′E′$</td><td>* id $</td><td>T′ → *FT′</td></tr>
+    <tr><td>*FT′E′$</td><td>* id $</td><td>match *</td></tr>
+    <tr><td>FT′E′$</td><td>id $</td><td>F → id</td></tr>
+    <tr><td>idT′E′$</td><td>id $</td><td>match id</td></tr>
+    <tr><td>T′E′$</td><td>$</td><td>T′ → ε</td></tr>
+    <tr><td>E′$</td><td>$</td><td>E′ → ε</td></tr>
+    <tr><td>$</td><td>$</td><td>accept</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="practice-link"><a href="quiz.html?topic=4">Quiz Topic 4</a> or <a href="cards.html?topic=4">drill its flashcards</a>.</p>
+
+<!-- ======================= CHEAT SHEET ======================= -->
+<h2 id="cheat">Cheat sheet and traps</h2>
+<table>
+  <thead><tr><th>Concept</th><th>Key fact</th></tr></thead>
+  <tbody>
+    <tr><td>⇒ vs ⇒*</td><td>One step vs zero or more steps</td></tr>
+    <tr><td>Ambiguous</td><td>Two leftmost derivations, i.e. two parse trees, for one string</td></tr>
+    <tr><td>S → SS</td><td>A common source of ambiguity (three blocks group two ways)</td></tr>
+    <tr><td>Nullable</td><td>A ⇒* ε; found from A → ε and rules made only of nullable variables</td></tr>
+    <tr><td>CNF</td><td>A → BC or A → a (B, C not the start variable), plus S → ε</td></tr>
+    <tr><td>CNF steps</td><td>ε-rules, unit rules, terminals in long rules, split long rules</td></tr>
+    <tr><td>PDA</td><td>6-tuple (Q, Σ, Γ, δ, q₀, F); δ: Q × Σ_ε × Γ_ε → P(Q × Γ_ε)</td></tr>
+    <tr><td>a, b → c</td><td>Read a, pop b, push c</td></tr>
+    <tr><td>DPDA</td><td>At most one move each, no ε-move alongside an input move; weaker than PDA ({wwᴿ})</td></tr>
+    <tr><td>Left recursion</td><td>A → Aα | β becomes A → βA′, A′ → αA′ | ε</td></tr>
+    <tr><td>Left factoring</td><td>A → αβ₁ | αβ₂ becomes A → αA′, A′ → β₁ | β₂</td></tr>
+    <tr><td>Table rule</td><td>A → α into M[A, FIRST(α)]; if α ⇒* ε, also M[A, FOLLOW(A)]</td></tr>
+  </tbody>
+</table>
+<ul>
+  <li>T ⇒* T is true by zero steps; T ⇒ T is not.</li>
+  <li>Removing ε-rules: never delete a variable that is not nullable (C in S → AACD).</li>
+  <li>CNF forbids the start variable on any right side.</li>
+  <li>FOLLOW sets never contain ε; FIRST sets can.</li>
+  <li>M₁ accepts ε because q₁ is an accept state.</li>
+</ul>
+<p class="practice-link"><a href="exam.html">Take a timed practice exam</a> when you’re ready.</p>
+    </article>
+  </div>
+</main>
+<footer id="site-foot"></footer>
+<script src="../assets/m2/questions.js?v=20261025a"></script>
+<script src="../assets/ptree.js?v=20261025a"></script>
+<script src="../assets/app.js?v=20261025a"></script>
+<script>
+(function () {
+  document.getElementById('tree-xyz').innerHTML =
+    ptree(['E', ['E', 'x'], '+', ['E', ['E', 'y'], '*', ['E', 'z']]], 'x + (y * z)') +
+    ptree(['E', ['E', ['E', 'x'], '+', ['E', 'y']], '*', ['E', 'z']], '(x + y) * z');
+  document.getElementById('tree-abb').innerHTML =
+    ptree(['S', ['A', 'a', 'b'], ['S', 'b']], 'A → ab, then S → b') +
+    ptree(['S', ['A', ['S', 'a'], ['S', 'b']], ['S', 'b']], 'A → SS, then S → b');
+  // The parsing table is the same one the quiz questions use.
+  var g = GROUPS['g-lltab'], i = g.indexOf('<table');
+  document.getElementById('ll-table').innerHTML = g.slice(i);
+})();
+(function () {
+  // Build the table of contents from h2/h3 ids and highlight the section in view.
+  var toc = document.getElementById('toc'), heads = document.querySelectorAll('#guide h2[id], #guide h3[id]');
+  var links = [];
+  heads.forEach(function (h) {
+    var a = document.createElement('a'); a.href = '#' + h.id;
+    a.textContent = h.childNodes[0].textContent.trim();
+    var li = document.createElement('li');
+    if (h.tagName === 'H3') li.className = 'sub';
+    li.appendChild(a); toc.appendChild(li); links.push([h, a]);
+  });
+  function onScroll() {
+    var y = window.scrollY + 120, active = links[0];
+    links.forEach(function (p) { if (p[0].offsetTop <= y) active = p; });
+    links.forEach(function (p) { p[1].classList.toggle('active', p === active); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+})();
+</script>
+</body>
+</html>

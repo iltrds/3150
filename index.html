@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
 <title>CIS*3150 study site</title>
 <meta name="description" content="Unofficial study site for CIS*3150 Theory of Computation: Midterm 1 review (guide, flashcards, quizzes, the practice test and real midterm questions) and Midterm 2, in progress.">
-<link rel="stylesheet" href="assets/style.css?v=20261020b">
+<link rel="stylesheet" href="assets/style.css?v=20261025a">
 </head>
 <body>
 <header id="site-head"></header>
@@ -30,31 +30,41 @@
       </div>
       <p class="unit-meta" id="m1-meta"></p>
     </li>
-    <li class="unit pending">
+    <li class="unit">
       <span class="bubble" aria-hidden="true">2</span>
       <div>
         <h3><a href="m2/index.html">Midterm 2</a></h3>
-        <p>Being built. The study guide, flashcards, quizzes and practice exam will be added in the same format as Midterm 1 once the topics are announced.</p>
+        <p>Grammars and ambiguity; Chomsky normal form; pushdown automata; predictive (LL(1)) parsing. Added lecture by lecture; date not yet announced.</p>
+        <p class="unit-links"><a href="m2/guide.html">Study guide</a><a href="m2/cards.html">Flashcards</a><a href="m2/quiz.html">Quizzes</a><a href="m2/exam.html">Practice exam</a></p>
       </div>
-      <p class="unit-meta">In progress</p>
+      <p class="unit-meta" id="m2-meta"></p>
     </li>
   </ol>
 </main>
 <footer id="site-foot"></footer>
-<script src="assets/m1/questions.js?v=20261020b"></script>
-<script src="assets/m1/questions-prof.js?v=20261020b"></script>
-<script src="assets/m1/midterm.js?v=20261020b"></script>
-<script src="assets/m1/cards.js?v=20261020b"></script>
-<script src="assets/app.js?v=20261020b"></script>
+<script src="assets/m1/questions.js?v=20261025a"></script>
+<script src="assets/m1/questions-prof.js?v=20261025a"></script>
+<script src="assets/m1/midterm.js?v=20261025a"></script>
+<script src="assets/m1/cards.js?v=20261025a"></script>
+<script>window.M1_COUNTS = { q: QB.length, c: CARDS.length };</script>
+<script src="assets/m2/questions.js?v=20261025a"></script>
+<script src="assets/m2/cards.js?v=20261025a"></script>
+<script src="assets/app.js?v=20261025a"></script>
 <script>
 (function () {
   var hist = App.storeFor('m1').get('history', []);
-  var meta = QB.length + ' questions, ' + CARDS.length + ' flashcards';
+  var meta = M1_COUNTS.q + ' questions, ' + M1_COUNTS.c + ' flashcards';
   if (hist.length) {
     var best = hist.reduce(function (b, h) { return h.score / h.total > b.score / b.total ? h : b; });
     meta += '<br>' + hist.length + ' practice exam' + (hist.length > 1 ? 's' : '') + ' taken, best ' + best.score + '/' + best.total;
   }
   document.getElementById('m1-meta').innerHTML = meta;
+  var h2 = App.storeFor('m2').get('history', []), meta2 = QB.length + ' questions, ' + CARDS.length + ' flashcards';
+  if (h2.length) {
+    var b2 = h2.reduce(function (b, h) { return h.score / h.total > b.score / b.total ? h : b; });
+    meta2 += '<br>' + h2.length + ' practice exam' + (h2.length > 1 ? 's' : '') + ' taken, best ' + b2.score + '/' + b2.total;
+  }
+  document.getElementById('m2-meta').innerHTML = meta2;
 })();
 </script>
 </body>

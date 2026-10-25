@@ -1,6 +1,8 @@
 /* Practice exam: timer, pace, bubble sheet (A–E), shared setups, class practice test mode */
 (function () {
-  var N = 29, MIX = { 1: 7, 2: 8, 3: 8, 4: 6 }, VERSION = 2;
+  var CFG = window.EXAM_CONFIG || { n: 29, mix: { 1: 7, 2: 8, 3: 8, 4: 6 } };
+  var N = CFG.n, MIX = CFG.mix, VERSION = 2;
+  var TOPIC_IDS = Object.keys(TOPICS).map(Number);
   var MODES = {
     midterm: { label: 'Midterm 1 questions', min: 61 },
     practice: { label: 'Class practice test', min: 25 },
@@ -12,7 +14,7 @@
   var S = null, timer = null, lastTick = 0;
   var store = App.store;
 
-  document.getElementById('mix-line').textContent = N + ' questions: ' + [1, 2, 3, 4].map(function (t) { return MIX[t] + ' on ' + TOPICS[t].short; }).join(', ') + '.';
+  document.getElementById('mix-line').textContent = N + ' questions: ' + TOPIC_IDS.map(function (t) { return MIX[t] + ' on ' + TOPICS[t].short; }).join(', ') + '.';
 
   /* ---------- mode picker ---------- */
   var modeEls = document.querySelectorAll('#modes .mode');
@@ -30,7 +32,7 @@
   function draw() {
     var seen = store.get('seen', {});
     var picked = [];
-    [1, 2, 3, 4].forEach(function (t) {
+    TOPIC_IDS.forEach(function (t) {
       var m = MIX[t];
       var pool = QB.filter(function (q) { return q.t === t && !q.pt && !q.mt; }); // real-test questions have their own modes
       var groups = {};
@@ -252,7 +254,7 @@
       '<div><b>' + App.fmtTime(used / n) + '</b>average per question</div>' +
       '<div><b>' + blanks + '</b>left blank</div><div><b>' + R.flags.filter(Boolean).length + '</b>flagged</div></div>';
     h += '<div class="grid-2" style="margin-top:28px"><div class="panel"><h3>By topic</h3><div class="topic-bars">';
-    [1, 2, 3, 4].forEach(function (t) {
+    TOPIC_IDS.forEach(function (t) {
       var v = byTopic[t]; if (!v) return;
       var p = v[0] / v[1] * 100;
       h += '<div class="tb"><span>' + TOPICS[t].short + '</span><div class="progress"><i style="width:' + p + '%;' + (p < 60 ? 'background:var(--red)' : '') + '"></i></div><span>' + v[0] + '/' + v[1] + '</span></div>';
@@ -306,7 +308,7 @@
   }
   // Real-midterm questions keep their exam numbers (8–29) in the results.
   function qnum(R, i) { var q = App.byId(R.items[i].id); return R.mode === 'midterm' && q.mt ? q.mt : i + 1; }
-  function weakest(bt) { var w = 1, wp = 2; [1, 2, 3, 4].forEach(function (t) { var v = bt[t]; if (v && v[0] / v[1] < wp) { wp = v[0] / v[1]; w = t; } }); return w; }
+  function weakest(bt) { var w = TOPIC_IDS[0], wp = 2; TOPIC_IDS.forEach(function (t) { var v = bt[t]; if (v && v[0] / v[1] < wp) { wp = v[0] / v[1]; w = t; } }); return w; }
 
   /* ---------- resume ---------- */
   function checkResume() {
