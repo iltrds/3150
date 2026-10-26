@@ -493,3 +493,74 @@ svg.ptree text.term { font: 400 17px var(--serif); fill: var(--ink); }
   .unit-meta { grid-column: 2; text-align: left; white-space: normal; }
   .answer-rows .row-off { grid-template-columns: auto 1fr; padding: 16px; }
 }
+
+/* ---------- LL(1) animations (Midterm 2 guide) ---------- */
+.llviz { font-family: var(--sans); font-size: 15px; line-height: 1.45; background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 18px 20px 20px; margin: 1.2em 0 1.6em; box-shadow: var(--shadow); }
+.llviz h4 { font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 16px 0 8px; }
+.llviz h4 span { font-weight: 400; color: var(--ink-3); margin-left: 6px; }
+.llv-controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-bottom: 12px; }
+.llv-input { display: flex; gap: 8px; align-items: center; font-weight: 600; font-size: 14px; }
+.llviz select, .llviz input[type=text] { font: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); color: var(--ink); }
+.llviz input[type=text] { width: 200px; font-family: var(--serif); font-size: 16px; }
+.llv-own { display: flex; gap: 8px; align-items: center; }
+.llv-own[hidden] { display: none; }
+.llv-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.llv-speed { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--ink-2); margin-left: 4px; }
+.llv-count { margin-left: auto; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.llv-say { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--paper-2); min-height: 3.3em; font-size: 15.5px; }
+.llviz[data-state="accept"] .llv-say { background: var(--form-2); }
+.llviz[data-state="error"] .llv-say, .llviz[data-state="mismatch"] .llv-say { background: var(--red-2); }
+.llv-grid { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 4px 22px; }
+.llv-main { min-width: 0; }
+.llv-stack { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.llv-cell { border: 1.5px solid var(--rule); border-radius: 8px; padding: 5px 0; text-align: center; font-family: var(--serif); font-size: 17px; background: var(--paper); transition: background-color .2s, border-color .2s; }
+.llv-cell.nt { color: var(--ink); }
+.llv-cell.term { color: var(--form); font-weight: 600; }
+.llv-cell.end { color: var(--ink-3); }
+.llv-cell.top { border-color: var(--ink); background: var(--hi-2); box-shadow: 0 0 0 2px var(--hi-2); }
+.llv-tape { display: flex; flex-wrap: wrap; gap: 4px; }
+.llv-tok { min-width: 40px; padding: 6px 8px; text-align: center; border: 1.5px solid var(--rule); border-radius: 8px; font-family: var(--serif); font-size: 17px; background: var(--paper); transition: background-color .2s, border-color .2s, opacity .2s; }
+.llv-tok sub { font-size: 11px; color: var(--ink-3); }
+.llv-tok.done { opacity: .4; text-decoration: line-through; text-decoration-color: var(--ink-3); }
+.llv-tok.look { border-color: var(--ink); background: var(--hi-2); box-shadow: 0 0 0 2px var(--hi-2); }
+.llv-form { font-family: var(--serif); font-size: 18px; margin: 0; }
+.llv-form .m { color: var(--form); font-weight: 600; }
+.llv-tree { overflow-x: auto; padding-bottom: 4px; }
+.llv-tree svg { display: block; max-width: none; }
+.llv-tree line { stroke: var(--ink-3); stroke-width: 1.3; }
+.llv-tree circle { fill: var(--paper); stroke: var(--ink-3); stroke-width: 1.2; transition: fill .2s, stroke .2s; }
+.llv-tree text { font: 15px var(--serif); fill: var(--ink); }
+.llv-tree .nt.open circle { stroke-dasharray: 3 3; }
+.llv-tree .tm circle { stroke: var(--form-3); }
+.llv-tree .tm text { fill: var(--form); font-weight: 600; }
+.llv-tree .tm.done circle { fill: var(--form-2); stroke: var(--form); }
+.llv-tree .eps circle { stroke: none; fill: none; }
+.llv-tree .eps text { fill: var(--ink-3); }
+.llv-tree g.focus circle, .llv-tree .nt.open.focus circle { stroke: var(--ink); stroke-width: 2.5; fill: var(--hi-2); stroke-dasharray: none; }
+.llviz .llv-table { font-size: 14px; }
+.llviz .llv-table td { white-space: nowrap; transition: background-color .2s; }
+.llviz .llv-table .hl-r th, .llviz .llv-table th.hl-c { background: var(--hi-2); }
+.llviz .llv-table td.hl { background: var(--hi); color: #2B2D31; font-weight: 700; }
+.llviz .llv-table td.bad { background: var(--red-2); box-shadow: inset 0 0 0 2px var(--red); }
+.llv-out { margin: 0; padding-left: 1.6em; columns: 2; column-gap: 28px; font-family: var(--serif); font-size: 16px; }
+.llv-out li.next { color: var(--ink-3); font-style: italic; }
+.llb-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 24px; }
+.llb-prods { margin: 0; padding-left: 1.6em; font-family: var(--serif); font-size: 16px; }
+.llb-prods li { padding: 2px 6px; border-radius: 6px; }
+.llb-prods li.done { color: var(--ink-3); }
+.llb-prods li.cur { background: var(--hi); color: #2B2D31; font-weight: 700; }
+.llb-sets td.use { background: var(--hi-2); font-weight: 700; }
+.llviz .llb-sets { font-size: 14px; margin-top: 0; }
+@media (max-width: 720px) {
+  .llviz { padding: 14px 12px 16px; }
+  .llv-grid { grid-template-columns: minmax(0, 1fr); }
+  .llv-col, .llv-main { min-width: 0; }
+  .llv-stack { flex-direction: row; flex-wrap: wrap; }
+  .llv-cell { min-width: 44px; padding: 5px 8px; }
+  .llb-grid { grid-template-columns: 1fr; }
+  .llv-out { columns: 1; }
+  .llv-count { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .llviz * { transition: none !important; } }
+.trace-details { margin: 0 0 1.4em; font-family: var(--sans); font-size: 15px; }
+.trace-details summary { cursor: pointer; color: var(--form); font-weight: 600; margin-bottom: 8px; }

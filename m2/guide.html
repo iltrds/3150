@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261025a">
+<link rel="stylesheet" href="../assets/style.css?v=20261026c">
 <style>
   .diagram svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 1.2em 0 .6em; }
   .diagram .st { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.4; }
@@ -195,6 +195,15 @@ X → a | b</pre>
 <!-- ======================= TOPIC 4 ======================= -->
 <h2 id="t4">Topic 4: Predictive (LL(1)) parsing</h2>
 <p>A predictive parser builds a leftmost derivation top down, choosing each production by looking at one input symbol. It needs a grammar with no left recursion and no common prefixes, plus FIRST and FOLLOW sets to fill its table.</p>
+<div class="callout"><span class="label">The idea in four moves</span>
+<p>The stack holds what the parser still <em>expects</em> to see, starting with E$. It repeats one of four moves:</p>
+<ol>
+  <li><strong>Nonterminal on top:</strong> look up M[top, lookahead] and replace the top with that production’s right side (an ε-rule just pops).</li>
+  <li><strong>Terminal on top that matches the lookahead:</strong> pop it and advance the input.</li>
+  <li><strong>$ on top and $ in the input:</strong> accept.</li>
+  <li><strong>Anything else</strong> (a blank cell, or a terminal that doesn’t match): error.</li>
+</ol>
+<p>It never backtracks: one lookahead symbol always decides which production to use. That is what the table and the FIRST/FOLLOW sets guarantee.</p></div>
 
 <h3 id="t4-lr">Left recursion and left factoring</h3>
 <ul>
@@ -229,11 +238,14 @@ F  → ( E ) | id</pre>
 
 <h3 id="t4-table">The parsing table</h3>
 <p>For each production A → α: add it to M[A, a] for every terminal a ∈ FIRST(α); if ε ∈ FIRST(α), also add it to M[A, b] for every b ∈ FOLLOW(A). Blank cells are errors. If any cell gets two productions, the grammar is <strong>not LL(1)</strong> (S → aA | aB puts both in M[S, a]; left factoring fixes it).</p>
-<div class="table-scroll" id="ll-table"></div>
+<p><strong>Watch it fill.</strong> Step through the eight productions and see which cells each one claims, and why.</p>
+<div id="llb"><div class="table-scroll" id="ll-table"></div></div>
 <p><strong>LL(1)</strong>: scan Left to right, build a Leftmost derivation, look 1 symbol ahead. LL(k) looks k symbols ahead.</p>
 
 <h3 id="t4-trace">Parsing id + id * id</h3>
-<p>Start with E$ on the stack. Nonterminal on top: replace it using M[top, input]. Matching terminal on top: pop it and advance. Both $: accept.</p>
+<p>Start with E$ on the stack. Nonterminal on top: replace it using M[top, input]. Matching terminal on top: pop it and advance. Both $: accept. Press <strong>Play</strong> or <strong>Step</strong> (or use the ← → keys), and try the error examples or your own expression.</p>
+<div id="llv"></div>
+<details class="trace-details"><summary>The whole id + id * id trace as one table</summary>
 <div class="table-scroll">
 <table class="trace">
   <thead><tr><th>Stack (top first)</th><th>Input</th><th>Action</th></tr></thead>
@@ -258,6 +270,7 @@ F  → ( E ) | id</pre>
   </tbody>
 </table>
 </div>
+</details>
 <p class="practice-link"><a href="quiz.html?topic=4">Quiz Topic 4</a> or <a href="cards.html?topic=4">drill its flashcards</a>.</p>
 
 <!-- ======================= CHEAT SHEET ======================= -->
@@ -291,9 +304,10 @@ F  → ( E ) | id</pre>
   </div>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261025a"></script>
-<script src="../assets/ptree.js?v=20261025a"></script>
-<script src="../assets/app.js?v=20261025a"></script>
+<script src="../assets/m2/questions.js?v=20261026c"></script>
+<script src="../assets/ptree.js?v=20261026c"></script>
+<script src="../assets/m2/llviz.js?v=20261026c"></script>
+<script src="../assets/app.js?v=20261026c"></script>
 <script>
 (function () {
   document.getElementById('tree-xyz').innerHTML =
@@ -302,9 +316,13 @@ F  → ( E ) | id</pre>
   document.getElementById('tree-abb').innerHTML =
     ptree(['S', ['A', 'a', 'b'], ['S', 'b']], 'A → ab, then S → b') +
     ptree(['S', ['A', ['S', 'a'], ['S', 'b']], ['S', 'b']], 'A → SS, then S → b');
-  // The parsing table is the same one the quiz questions use.
+  // Static table first (works without the animation), then the step-through versions replace it.
   var g = GROUPS['g-lltab'], i = g.indexOf('<table');
   document.getElementById('ll-table').innerHTML = g.slice(i);
+  if (window.LLViz) {
+    var b = document.getElementById('llb'); b.innerHTML = ''; LLViz.builder(b);
+    LLViz.parser(document.getElementById('llv'));
+  }
 })();
 (function () {
   // Build the table of contents from h2/h3 ids and highlight the section in view.
