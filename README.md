@@ -64,4 +64,4 @@ Pages link assets with a version tag (`style.css?v=…`) so browsers fetch fresh
 
 ## Adding to Midterm 2
 
-Midterm 2 data lives in `assets/m2/` (`questions.js` also sets `TOPICS`, `GROUPS` and `EXAM_CONFIG`; `cards.js`). Add new lectures' questions there and new sections to `m2/guide.html`. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).
+Midterm 2 data lives in `assets/m2/` (`questions.js` also sets `TOPICS`, `GROUPS` and `EXAM_CONFIG`; `cards.js`). Add new lectures' questions there and new sections to `m2/guide.html`. Questions from the Oct 27 class exercise carry `ex: <question number>` (shown with a “Class exercise” tag); variants written in the same style carry `exv: 1`. Both appear in random exams and in the quiz's class-exercise filter (`quiz.html?source=exercise`). The exercise's regex question (`ex-1`) and its variants are in `assets/m1/questions-prof.js`. Choices may number 2 to 6; a sixth choice is F on screen and key 6. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).

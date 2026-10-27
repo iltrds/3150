@@ -13,6 +13,9 @@ window.CARDS = [
   { t: 1, f: 'G₂: S → (L) | a, L → LS | S and G₃: S → AA, A → aA | b', b: 'Both unambiguous. In G₂ the list is built in one order; in G₃ each A ends at its first b, so the split of AA is forced.' },
   { t: 1, f: 'S → AS | a | b,  A → SS | ab', b: 'Ambiguous: abb has two parse trees (A → ab then S → b, or A → SS giving a, b then S → b).' },
   { t: 1, f: 'Why ambiguity matters', b: 'The parse tree gives the meaning. Two trees for x + y * z means two different values; the dangling else can attach to either if.' },
+  { t: 1, f: 'How many productions? (class exercise)', b: 'Count each alternative after |, not each line. S → AB | c, A → BS | a, B → bc | SA has 3 lines but 6 productions. ε-rules count too.' },
+  { t: 1, f: 'Leaves of a parse tree (class exercise)', b: 'Read left to right, the leaves spell the string, so c*(c) has 5 leaves: c, *, (, c, ). The 4 E nodes are interior nodes. An ε-rule adds an ε leaf. Two parse trees of one string have the same leaves.' },
+  { t: 1, f: 'True or false: T ⇒ aba, with T → XTX | X | ε (class exercise)', b: 'False: in one step T only becomes XTX, X or ε. T ⇒* aba is true (T ⇒ XTX ⇒ aTX ⇒ aXX ⇒ abX ⇒ aba).' },
   { t: 1, f: 'Dangling else (Sipser 2.27)', b: '“if c then if c then s else s”: the else can belong to the inner or the outer if, so the IF-THEN / IF-THEN-ELSE grammar is ambiguous.' },
 
   /* Topic 2: Simplifying grammars and CNF */
@@ -45,6 +48,7 @@ window.CARDS = [
   { t: 4, f: 'Left recursion', b: 'A rule A → Aα. A top-down parser calls A() again before reading anything, looping until the stack overflows.' },
   { t: 4, f: 'Removing left recursion: A → Aα | β', b: 'A → βA′,  A′ → αA′ | ε.  So E → E + T | T becomes E → TE′, E′ → +TE′ | ε.' },
   { t: 4, f: 'Left factoring: A → αβ₁ | αβ₂', b: 'A → αA′,  A′ → β₁ | β₂. Example: stmt → if expr then stmt stmt′, stmt′ → else stmt | ε.' },
+  { t: 4, f: 'Left factoring mistakes (class exercise)', b: 'Taking out too little (statement → IF test A changes the language), forgetting the ε option (then every IF needs an ELSE), or leaving two alternatives that still start with the same symbol.' },
   { t: 4, f: 'LL(1)', b: 'Left-to-right scan, Leftmost derivation, 1 symbol of lookahead. LL(k) looks k symbols ahead.' },
   { t: 4, f: 'FIRST(α)', b: 'Terminals that can begin a string derived from α, plus ε if α ⇒* ε. FIRST(terminal) = {terminal}.' },
   { t: 4, f: 'FOLLOW(A)', b: 'Terminals that can appear right after A in some sentential form. $ ∈ FOLLOW(start). For A → αBβ: FIRST(β) − {ε} ⊆ FOLLOW(B); if β ⇒* ε, FOLLOW(A) ⊆ FOLLOW(B).' },

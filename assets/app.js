@@ -1,7 +1,7 @@
 /* Shared helpers for the CIS*3150 study site.
    Each page sets <body data-unit="m1"> (or m2); the course home has no unit. */
 (function () {
-  var LETTERS = ['A', 'B', 'C', 'D', 'E'];
+  var LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
   var UNIT_PAGES = [['index.html', 'Overview'], ['guide.html', 'Study guide'], ['cards.html', 'Flashcards'], ['quiz.html', 'Quizzes'], ['exam.html', 'Practice exam']];
   var UNITS = {
     // Midterm 1 keeps the original storage prefix so earlier progress carries over.
@@ -158,6 +158,8 @@
       if (q.src === 'lecture') meta += '<span class="tag lecture">From lecture</span>';
       if (q.pt) meta += '<span class="tag practice">Practice test Q' + q.pt + '</span>';
       if (q.mt) meta += '<span class="tag practice">Midterm 1 Q' + q.mt + '</span>';
+      if (q.ex) meta += '<span class="tag practice">Class exercise Q' + q.ex + '</span>';
+      else if (q.exv) meta += '<span class="tag">Class-exercise style</span>';
     }
     card.appendChild(el('div', { class: 'qmeta' }, meta));
     if (q.g && window.GROUPS && GROUPS[q.g]) {
@@ -195,7 +197,7 @@
     var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return -1;
     var k = e.key.toLowerCase();
     var i = 'abcde'.indexOf(k); if (i >= 0 && k.length === 1) return i;
-    i = '12345'.indexOf(k); if (i >= 0 && k.length === 1) return i;
+    i = '123456'.indexOf(k); if (i >= 0 && k.length === 1) return i; // F is the exam's flag key, so a sixth choice is 6 only
     return -1;
   }
 

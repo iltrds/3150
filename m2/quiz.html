@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261026c">
+<link rel="stylesheet" href="../assets/style.css?v=20261027a">
 </head>
 <body data-unit="m2">
 <header id="site-head"></header>
@@ -29,7 +29,8 @@
       </div>
     </div>
     <div class="row">
-      <label class="toggle"><input type="checkbox" id="missed-only"> Only questions I’ve missed before <span class="muted small" id="missed-count"></span></label>
+      <label class="toggle"><input type="checkbox" id="ex-only"> Only class-exercise questions and variants <span class="muted small" id="ex-count"></span></label><br>
+      <label class="toggle" style="margin-top:8px"><input type="checkbox" id="missed-only"> Only questions I’ve missed before <span class="muted small" id="missed-count"></span></label>
     </div>
     <div class="btn-row">
       <button class="btn" id="start" type="button">Start quiz</button>
@@ -53,8 +54,8 @@
   <section id="done" hidden class="quiz-area"></section>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261026c"></script>
-<script src="../assets/app.js?v=20261026c"></script>
+<script src="../assets/m2/questions.js?v=20261027a"></script>
+<script src="../assets/app.js?v=20261027a"></script>
 <script>
 (function () {
   var params = new URLSearchParams(location.search);
@@ -84,20 +85,23 @@
     });
   });
   // Filters are optional: a unit's page only includes the ones that apply to it.
-  var lectureOnly = document.getElementById('lecture-only'), missedOnly = document.getElementById('missed-only'), profOnly = document.getElementById('prof-only'), mtOnly = document.getElementById('mt-only');
+  var lectureOnly = document.getElementById('lecture-only'), missedOnly = document.getElementById('missed-only'), profOnly = document.getElementById('prof-only'), mtOnly = document.getElementById('mt-only'), exOnly = document.getElementById('ex-only');
   function on(x) { return !!(x && x.checked); }
   if (profOnly && params.get('style') === 'prof') profOnly.checked = true;
   if (mtOnly && params.get('source') === 'midterm') mtOnly.checked = true;
-  [lectureOnly, missedOnly, profOnly, mtOnly].forEach(function (x) { if (x) x.addEventListener('change', updatePool); });
+  if (exOnly && params.get('source') === 'exercise') exOnly.checked = true;
+  [lectureOnly, missedOnly, profOnly, mtOnly, exOnly].forEach(function (x) { if (x) x.addEventListener('change', updatePool); });
 
   function pool() {
     return QB.filter(function (q) {
-      return selected[q.t] && (!on(lectureOnly) || q.src === 'lecture') && (!on(missedOnly) || missed[q.id]) && (!on(profOnly) || q.fmt === 'prof') && (!on(mtOnly) || q.mt);
+      return selected[q.t] && (!on(lectureOnly) || q.src === 'lecture') && (!on(missedOnly) || missed[q.id]) && (!on(profOnly) || q.fmt === 'prof') && (!on(mtOnly) || q.mt) && (!on(exOnly) || q.ex || q.exv);
     });
   }
   function updatePool() {
     var p = pool(), n = length && length < p.length ? length : p.length;
     var mc = Object.keys(missed).length;
+    var exc = QB.filter(function (q) { return q.ex || q.exv; }).length;
+    if (document.getElementById('ex-count')) document.getElementById('ex-count').textContent = '(' + exc + ')';
     document.getElementById('missed-count').textContent = mc ? '(' + mc + ')' : '(none yet)';
     var pc = document.getElementById('prof-count'), mc2 = document.getElementById('mt-count');
     if (pc) pc.textContent = '(' + QB.filter(function (q) { return selected[q.t] && q.fmt === 'prof'; }).length + ')';

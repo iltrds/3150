@@ -262,7 +262,17 @@
       x: 'From the lecture: the 01/10 language looks like counting but is regular (the counts are equal exactly when w is empty or starts and ends with the same symbol). The others need unbounded memory.' },
     { id: 'p4-14', t: 4, s: 'Pumping lemma', q: 'The pumping lemma for regular languages can be used to prove that a language',
       c: ['is regular.', 'is not regular.', 'is context-free.', 'is finite.', 'None of the above'], a: 1,
-      x: 'Every regular language satisfies the lemma, so a language that fails it is not regular. Satisfying it proves nothing.' }
+      x: 'Every regular language satisfies the lemma, so a language that fails it is not regular. Satisfying it proves nothing.' },
+    /* Class exercise (Oct 27, during the Midterm 2 unit): question 1 as written, plus two variants. */
+    { id: 'ex-1', ex: 1, t: 3, s: 'Regex identities', q: 'Which of the following is <b>NOT</b> true? (Here + means union.)',
+      c: ["All of these","None of these","(01)*0 = 0(10)*","(0+1)*0(0+1)*1(0+1)* = (0+1)*01(0+1)*","(0+1)*01(0+1)* + 1*0* = 1(0+1)*"], a: 4,
+      x: "(c) is true: both sides are 0, 010, 01010, …, alternating and starting and ending with 0. (d) is true: if some 0 comes before some 1, the last 0 before that 1 sits right next to a 1, so 01 is a substring. (e) is false: the left side is every string (strings containing 01, plus the strings with no 01, which are exactly 1*0*), while the right side needs a leading 1. So ε and 0 are on the left but not on the right." },
+    { id: 'ex-1b', exv: 1, t: 3, s: 'Regex identities', q: 'Which of the following is <b>NOT</b> true? (Here + means union.)',
+      c: ["All of these","None of these","(0+1)*0 + (0+1)*1 = (0+1)*","(10)*1 = 1(01)*","(0+1)*1(0+1)* + 0* = (0+1)*"], a: 2,
+      x: "(c) is false: every string on the left ends in 0 or 1, so ε is missing. (d) is true: both sides are 1, 101, 10101, …, alternating and starting and ending with 1. (e) is true: the strings with at least one 1, plus the strings with no 1s (0*), make up every string." },
+    { id: 'ex-1c', exv: 1, t: 3, s: 'Regex identities', q: 'Which of the following is true? (Here + means union.)',
+      c: ["(01)* = 0*1*","0* + 1* = (0+1)*","(0+1)*00(0+1)* = (0+1)*0(0+1)*","(0*1*)* = (0+1)*","None of these"], a: 3,
+      x: "(d) is true: 0*1* already contains each single symbol, so its star builds every string. (a) is false: 0 is in 0*1* but not in (01)*. (b) is false: 01 is only on the right. (c) is false: 0 is on the right, but the left side needs 00." }
   ];
 
   P.forEach(function (q) { q.fmt = 'prof'; q.keep = true; if (q.pt) q.src = 'practice'; });

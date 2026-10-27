@@ -164,7 +164,7 @@
       var num = App.el('button', { class: 'num', type: 'button', 'aria-label': 'Go to question ' + qn }, String(qn));
       num.addEventListener('click', function () { go(i); });
       li.appendChild(num);
-      for (var d = 0; d < 5; d++) {
+      for (var d = 0; d < Math.max(5, it.order.length); d++) {
         (function (d) {
           var b = App.el('button', { class: 'bubble', type: 'button', 'aria-label': 'Question ' + (i + 1) + ', answer ' + App.LETTERS[d], disabled: d >= it.order.length }, App.LETTERS[d]);
           b.addEventListener('click', function () { setAnswer(i, d); });

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261026c">
+<link rel="stylesheet" href="../assets/style.css?v=20261027a">
 <style>
   .diagram svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 1.2em 0 .6em; }
   .diagram .st { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.4; }
@@ -46,6 +46,40 @@
   </tbody>
 </table>
 </div>
+
+<h2 id="exercise">What the Oct 27 class exercise asked</h2>
+<p>The class exercise had five short questions. They show which quick checks to expect alongside the longer problems. They also show that earlier material comes back: Question 1 was regular expressions from Midterm 1.</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Q</th><th>Asked</th><th>What it tests</th><th>Format</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Which regex equation is NOT true?</td><td>Reading + as union; checking short strings such as ε and 0</td><td>5 choices, “All of these” / “None of these”</td></tr>
+    <tr><td>2</td><td>True or false: T ⇒ aba (Sipser 2.3 grammar)</td><td>⇒ (one step) versus ⇒* (any number of steps)</td><td>True / False</td></tr>
+    <tr><td>3</td><td>How many productions does S → AB | c, A → BS | a, B → bc | SA have?</td><td>Every alternative after | is its own production</td><td>6 choices</td></tr>
+    <tr><td>4</td><td>How many leaves does the parse tree for c*(c) have?</td><td>The leaves spell the string</td><td>4 choices</td></tr>
+    <tr><td>5</td><td>Left-factor statement → IF test THEN statement ELSE statement | IF test THEN statement</td><td>Take out the whole common prefix and keep the ε option</td><td>4 choices</td></tr>
+  </tbody>
+</table>
+</div>
+<details>
+  <summary>Answers and why</summary>
+  <ol>
+    <li><b>(0+1)*01(0+1)* + 1*0* = 1(0+1)*</b> is false. The left side is every string: the strings containing 01, plus the strings with no 01, which are exactly 1*0*. The right side needs a leading 1, so ε and 0 are on the left but not on the right. The other two equations are true.</li>
+    <li><b>False.</b> In one step T becomes only XTX, X or ε. T ⇒* aba is true: T ⇒ XTX ⇒ aTX ⇒ aXX ⇒ abX ⇒ aba.</li>
+    <li><b>6.</b> The grammar has three lines but two productions on each.</li>
+    <li><b>5</b>: c, *, (, c, ). The four E nodes are interior nodes.</li>
+    <li><b>statement → IF test THEN statement A,  A → ELSE statement | ε.</b> Leaving out the ε means every IF needs an ELSE. Factoring out only IF test changes the language.</li>
+  </ol>
+</details>
+<div class="callout"><span class="label">Quick checks that come up</span>
+  <ul>
+    <li><b>Read the arrow.</b> ⇒ is exactly one rule; ⇒* is zero or more rules.</li>
+    <li><b>Count alternatives, not lines.</b> ε-rules count as productions.</li>
+    <li><b>Leaves = the symbols of the string</b> (plus an ε leaf for each ε-rule used). Every parse tree of a string has the same leaves.</li>
+    <li><b>To disprove a regex equation, test the shortest strings first</b> (ε, 0, 1, 01, 10). One string that is on one side but not the other is enough.</li>
+  </ul>
+</div>
+<p class="practice-link"><a href="quiz.html?source=exercise">Quiz the class-exercise questions and variants</a>. The Midterm 1 regex question is in the <a href="../m1/quiz.html?topic=3">Midterm 1 Topic 3 quiz</a>.</p>
 
 <!-- ======================= TOPIC 1 ======================= -->
 <h2 id="t1">Topic 1: Designing grammars and ambiguity</h2>
@@ -279,6 +313,8 @@ F  → ( E ) | id</pre>
   <thead><tr><th>Concept</th><th>Key fact</th></tr></thead>
   <tbody>
     <tr><td>⇒ vs ⇒*</td><td>One step vs zero or more steps</td></tr>
+    <tr><td>Productions</td><td>Count each alternative after | (ε-rules included), not each line</td></tr>
+    <tr><td>Parse-tree leaves</td><td>Read left to right they spell the string; variables are interior nodes</td></tr>
     <tr><td>Ambiguous</td><td>Two leftmost derivations, i.e. two parse trees, for one string</td></tr>
     <tr><td>S → SS</td><td>A common source of ambiguity (three blocks group two ways)</td></tr>
     <tr><td>Nullable</td><td>A ⇒* ε; found from A → ε and rules made only of nullable variables</td></tr>
@@ -304,10 +340,10 @@ F  → ( E ) | id</pre>
   </div>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261026c"></script>
-<script src="../assets/ptree.js?v=20261026c"></script>
-<script src="../assets/m2/llviz.js?v=20261026c"></script>
-<script src="../assets/app.js?v=20261026c"></script>
+<script src="../assets/m2/questions.js?v=20261027a"></script>
+<script src="../assets/ptree.js?v=20261027a"></script>
+<script src="../assets/m2/llviz.js?v=20261027a"></script>
+<script src="../assets/app.js?v=20261027a"></script>
 <script>
 (function () {
   document.getElementById('tree-xyz').innerHTML =

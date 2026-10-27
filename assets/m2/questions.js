@@ -1,6 +1,7 @@
 /* CIS*3150 Midterm 2 question bank (lectures 6–7: CFGs part 2, PDAs, predictive parsing).
    Prof's format: five choices (a)–(e) in fixed order, shared setups (g), grammars shown as listings.
-   Answers checked by computation (FIRST/FOLLOW, LL(1) tables, nullable sets, parse-tree counts, PDA runs). */
+   Answers checked by computation (FIRST/FOLLOW, LL(1) tables, nullable sets, parse-tree counts, PDA runs).
+   ex = class exercise (Oct 27) question as written; exv = a variant in the same style. */
 (function () {
   function tbl(head, rows, cls) {
     var h = '<table class="mini ' + (cls || 'ttable') + '"><thead><tr>' + head.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr></thead><tbody>';
@@ -37,7 +38,8 @@
     'g-ll': '<p>Consider the expression grammar from the lecture (start symbol E):</p>' + EXPR,
     'g-lltab': '<p>The predictive parser for the expression grammar uses this parsing table (blank = error):</p>' + LLT,
     'g-ll2': '<p>Consider the grammar (start symbol S):</p>' + gram(['S → AB', 'A → aA | ε', 'B → b | c']),
-    'g-conf': '<p>Consider the grammar (start symbol S):</p>' + gram(['S → aA | aB', 'A → b', 'B → c'])
+    'g-conf': '<p>Consider the grammar (start symbol S):</p>' + gram(['S → aA | aB', 'A → b', 'B → c']),
+    'g-ex4': '<p>Consider the following grammar, from the alphabet {c, *, (, )}:</p>' + gram(['E → E * E | ( E ) | c'])
   };
 
   var N5 = ['1', '2', '3', '4', '5'];
@@ -279,7 +281,50 @@
       x: "Both S-rules start with a, so FIRST(aA) and FIRST(aB) overlap and one lookahead symbol cannot choose between them." },
     { id: 'c4-26', g: 'g-conf', t: 4, s: 'Left factoring', q: 'Which left-factored grammar generates the same language and is LL(1)?',
       c: ["S → aS′,  S′ → A | B,  A → b,  B → c","S → Sa | b | c,  A → b,  B → c","S → aA | aB,  A → b | c,  B → c","S → aS′,  S′ → aA | aB,  A → b,  B → c","None of the above"], a: 0,
-      x: "Factor out a: S → aS′ and decide between A and B on the next symbol (b or c). (c) still has two S-rules starting with a; (b) is left recursive and generates different strings; (d) needs two a’s." }
+      x: "Factor out a: S → aS′ and decide between A and B on the next symbol (b or c). (c) still has two S-rules starting with a; (b) is left recursive and generates different strings; (d) needs two a’s." },
+    /* Class exercise (Oct 27): questions 2–5 as written, plus variants in the same styles (exv). */
+    { id: 'ex-2', ex: 2, g: 'g-sip', t: 1, s: 'Derivations', q: 'True or false: T ⇒ aba',
+      c: ["True","False"], a: 1,
+      x: "A single arrow ⇒ means exactly one rule application. In one step T can only become XTX, X or ε, so T ⇒ aba is false. In several steps it works (T ⇒ XTX ⇒ aTX ⇒ aXX ⇒ abX ⇒ aba), so T ⇒* aba is true. Check which arrow the question uses." },
+    { id: 'ex-2b', exv: 1, g: 'g-sip', t: 1, s: 'Derivations', q: 'True or false: T ⇒* aba',
+      c: ["True","False"], a: 0,
+      x: "⇒* allows any number of steps: T ⇒ XTX ⇒ aTX ⇒ aXX ⇒ abX ⇒ aba. Compare class exercise Q2, which uses the single arrow ⇒ and is false." },
+    { id: 'ex-2c', exv: 1, g: 'g-sip', t: 1, s: 'Derivations', q: 'True or false: R ⇒ S',
+      c: ["True","False"], a: 0,
+      x: "R → S is one of G’s rules, so R becomes S in exactly one step." },
+    { id: 'ex-2d', exv: 1, g: 'g-sip', t: 1, s: 'Derivations', q: 'True or false: S ⇒* aba',
+      c: ["True","False"], a: 1,
+      x: "Both S-rules put different symbols at the two ends (aTb or bTa). aba starts and ends with a, so S cannot derive it in any number of steps. R ⇒* aba is false too, because aba is a palindrome." },
+    { id: 'ex-3', ex: 3, t: 1, s: 'Counting productions', q: 'Consider the following grammar. How many productions are there?' + "<pre class=\"g\">S → AB | c\nA → BS | a\nB → bc | SA</pre>",
+      c: ["6","4","5","7","3","None of these"], a: 0,
+      x: "Each alternative separated by | is its own production: S → AB, S → c, A → BS, A → a, B → bc and B → SA. The grammar has three lines but six productions. 3 is the number of variables." },
+    { id: 'ex-3b', exv: 1, g: 'g-sip', t: 1, s: 'Counting productions', q: 'How many productions does G have?',
+      c: ["4","8","9","7","None of these"], a: 2,
+      x: "R has 2, S has 2, T has 3 (XTX, X and ε) and X has 2, for 9. T → ε counts as a production; leaving it out gives 8. 4 is the number of variables." },
+    { id: 'ex-3c', exv: 1, g: 'g-ll', t: 4, s: 'Counting productions', q: 'How many productions does the expression grammar have?',
+      c: ["5","6","10","8","None of these"], a: 3,
+      x: "E has 1, E′ has 2, T has 1, T′ has 2 and F has 2, for 8. The ε-rules E′ → ε and T′ → ε count; leaving them out gives 6. 5 is the number of nonterminals." },
+    { id: 'ex-4', ex: 4, g: 'g-ex4', t: 1, s: 'Parse trees', q: 'The parse tree for the expression c*(c) will have _____ leaves.',
+      c: ["8","7","5","6"], a: 2,
+      x: "Read left to right, the leaves of a parse tree spell the string: c, *, (, c, ). That makes 5. The four E nodes are interior nodes, not leaves." },
+    { id: 'ex-4b', exv: 1, g: 'g-ex4', t: 1, s: 'Parse trees', q: 'How many nodes labelled E does the parse tree for c*(c) have?',
+      c: ["5","4","3","9"], a: 1,
+      x: "E → E * E at the root, E → c on the left, E → ( E ) on the right, and E → c inside the brackets: 4 E nodes. 9 is the total number of nodes (4 E nodes plus 5 leaves)." },
+    { id: 'ex-4c', exv: 1, g: 'g-ex4', t: 1, s: 'Parse trees', q: 'The string (c)*c*c has two parse trees in this grammar. How many leaves does each tree have?',
+      c: ["9 in one tree, 7 in the other","5 in both trees","7 in both trees","9 in both trees"], a: 2,
+      x: "The leaves of any parse tree spell the string, so every tree for (c)*c*c has its 7 symbols as leaves. The two trees group the * operations differently, but their leaves are the same." },
+    { id: 'ex-5', ex: 5, t: 4, s: 'Left factoring', q: 'Consider the grammar below. Which of the following grammars is obtained by correctly applying left factoring?' + "<pre class=\"g\">statement → IF test THEN statement ELSE statement\nstatement → IF test THEN statement</pre>",
+      c: ["statement → IF test A<br>A → THEN statement | ELSE statement","statement → IF test THEN A<br>A → ELSE statement | ε","statement → IF test THEN statement A<br>A → ELSE statement | ε","statement → IF test THEN statement A<br>A → ELSE statement"], a: 2,
+      x: "The common prefix is IF test THEN statement, which is the whole of the shorter rule. Factor all of it out and let A choose between ELSE statement and nothing (ε). (a) factors out too little and changes the language; (b) drops the inner statement; (d) has no ε, so every IF would need an ELSE." },
+    { id: 'ex-5b', exv: 1, t: 4, s: 'Left factoring', q: 'Which grammar is obtained by correctly left factoring A → abc | abd | e?',
+      c: ["A → aA′ | e<br>A′ → bc | bd","A → abA′ | e<br>A′ → c | d","A → abA′<br>A′ → c | d | e","A → abA′ | e<br>A′ → c | d | ε","None of these"], a: 1,
+      x: "Take out the longest common prefix, ab, in one step. (a) only takes out a, so both A′ rules still start with b; (c) generates abe instead of e; (d) adds the string ab." },
+    { id: 'ex-5c', exv: 1, t: 4, s: 'Left factoring', q: 'The dangling-else grammar in short form is S → iEtS | iEtSeS | a (i = if, t = then, e = else, E = the condition). Which grammar is its correct left factoring?',
+      c: ["S → iEtS′ | a<br>S′ → S | SeS","S → iEtSS′ | a<br>S′ → eS","S → iEtSS′<br>S′ → eS | a | ε","S → iEtSS′ | a<br>S′ → eS | ε","None of these"], a: 3,
+      x: "The common prefix is iEtS. Factor it out and let S′ choose between eS and ε (the textbook version). (a) leaves S′ with two rules that both start with S; (b) makes every if need an else; (c) removes S → a, so S can never finish and generates nothing." },
+    { id: 'ex-5d', exv: 1, t: 4, s: 'Left factoring', q: 'Which grammar is obtained by correctly left factoring E → T + E | T?',
+      c: ["E → TE′<br>E′ → +E | ε","E → T + E′<br>E′ → E | ε","E → E′ + E | T<br>E′ → T","E → TE′<br>E′ → +E","None of these"], a: 0,
+      x: "The common prefix is T. Factor it out: E → TE′, and E′ chooses between + E (more terms) and ε (done). (b) forces a + after the first T; (c) is still not factored, since both E-rules start with T; (d) has no ε, so E never finishes." }
   ];
 
   Q.forEach(function (q) { q.fmt = 'prof'; q.keep = true; });
