@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261027a">
+<link rel="stylesheet" href="../assets/style.css?v=20261103a">
 <style>
   .diagram svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 1.2em 0 .6em; }
   .diagram .st { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.4; }
@@ -24,7 +24,7 @@
 <header id="site-head"></header>
 <main class="wrap">
   <h1 style="font-size:clamp(32px,4.6vw,48px)">Midterm 2 study guide</h1>
-  <p class="lede" style="margin-bottom:36px">Lectures 6 and 7 so far: designing grammars and ambiguity, simplifying grammars and Chomsky normal form, pushdown automata, and predictive (LL(1)) parsing. New lectures will be added as they come.</p>
+  <p class="lede" style="margin-bottom:36px">Lectures 6, 7, 9 and 12 so far: designing grammars and ambiguity, simplifying grammars and Chomsky normal form, pushdown automata, predictive (LL(1)) parsing and parsing tables, and Turing machines. New lectures will be added as they come.</p>
 
   <div class="guide-layout">
     <nav class="toc" aria-label="Contents">
@@ -43,6 +43,8 @@
     <tr><td>2</td><td><a href="#t2">Simplifying grammars and CNF</a></td><td>L06</td><td>Sipser 2.1 (Chomsky normal form)</td></tr>
     <tr><td>3</td><td><a href="#t3">Pushdown automata</a></td><td>L07 PDAs</td><td>Sipser 2.2</td></tr>
     <tr><td>4</td><td><a href="#t4">Predictive parsing</a></td><td>L07 Predictive parsers</td><td>Aho, Sethi &amp; Ullman 2.4 and pp. 176–190</td></tr>
+    <tr><td>5</td><td><a href="#t5">Building parsing tables</a></td><td>L09 Parsing tables</td><td>Appel 3.2 (nullable, FIRST, FOLLOW)</td></tr>
+    <tr><td>6</td><td><a href="#t6">Turing machines</a></td><td>L12 Turing machines</td><td>Sipser 3.1</td></tr>
   </tbody>
 </table>
 </div>
@@ -307,6 +309,74 @@ F  → ( E ) | id</pre>
 </details>
 <p class="practice-link"><a href="quiz.html?topic=4">Quiz Topic 4</a> or <a href="cards.html?topic=4">drill its flashcards</a>.</p>
 
+<!-- ======================= TOPIC 5 ======================= -->
+<h2 id="t5">Topic 5: Building predictive parsing tables (Lecture 9)</h2>
+<p>Lecture 9 builds the LL(1) table for a small grammar in three passes: <b>nullable</b>, then <b>FIRST</b>, then <b>FOLLOW</b>. Each pass repeats its rules in rounds until a whole round changes nothing, called a <b>fixed point</b>. The slides write ε as an empty right side (Y ::=) and do not add the end marker $.</p>
+<pre class="g">Z ::= X Y Z  |  d
+Y ::= c  |  (empty)
+X ::= a  |  b Y e</pre>
+<div class="table-scroll">
+<table>
+  <thead><tr><th></th><th>nullable</th><th>FIRST</th><th>FOLLOW</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Z</td><td>no</td><td>d, a, b</td><td>{ }</td><td>Z ::= X Y Z starts with X (not nullable), so FIRST(Z) gets FIRST(X) but not c. Z only appears at the end of its own rule, so FOLLOW(Z) stays empty ({$} with an end marker).</td></tr>
+    <tr><td>Y</td><td>yes</td><td>c</td><td>e, d, a, b</td><td>Y is followed by Z (FIRST(Z) = d, a, b) and by e in X ::= b Y e.</td></tr>
+    <tr><td>X</td><td>no</td><td>a, b</td><td>c, d, a, b</td><td>X is followed by Y Z: FIRST(Y) = c, and Y is nullable, so FIRST(Z) as well.</td></tr>
+  </tbody>
+</table>
+</div>
+<h3 id="t5-table">Filling the table</h3>
+<p>For each rule X ::= s: put it in row X under every T ∈ FIRST(s). If s is nullable, also put it under every T ∈ FOLLOW(X).</p>
+<div class="table-scroll">
+<table class="mini ttable">
+  <thead><tr><th></th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Z</th><td>Z ::= X Y Z</td><td>Z ::= X Y Z</td><td></td><td>Z ::= d</td><td></td></tr>
+    <tr><th scope="row">Y</th><td>Y ::=</td><td>Y ::=</td><td>Y ::= c</td><td>Y ::=</td><td>Y ::=</td></tr>
+    <tr><th scope="row">X</th><td>X ::= a</td><td>X ::= b Y e</td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+</div>
+<ul>
+  <li><b>Blank cells are syntax errors.</b> This table has 10 filled cells.</li>
+  <li><b>Two rules in one cell means the grammar is not LL(1).</b> Adding Z ::= d e puts Z ::= d and Z ::= d e both in M[Z, d]. The fix is left factoring: Z ::= d W, W ::= ε | e.</li>
+  <li><b>LL(k)</b> tables have a column for every k-length sequence of terminals (aa, ab, ba, …).</li>
+  <li><b>Recursive descent</b> turns each nonterminal into a function with one case per rule: terminals become eat(token), nonterminals become calls. L ::= ; S L becomes “SEMI ⇒ eat SEMI; S(); L()”.</li>
+</ul>
+<p class="practice-link"><a href="quiz.html?topic=5">Quiz Topic 5</a> or <a href="cards.html?topic=5">drill its flashcards</a>.</p>
+
+<!-- ======================= TOPIC 6 ======================= -->
+<h2 id="t6">Topic 6: Turing machines (Lecture 12)</h2>
+<p>A Turing machine is a finite control with a tape that is input, storage and output at once. The head can read, write, and move left or right. Turing proposed it in 1936 as a model of any possible computation (after Hilbert’s question and Gödel’s 1931 incompleteness theorem).</p>
+<h3 id="t6-def">Definition</h3>
+<ul>
+  <li><b>(Q, Σ, Γ, δ, q₀, F)</b>: states, input alphabet <b>Σ ⊆ Γ − {blank}</b>, tape alphabet Γ, transition function, start state, final states F ⊆ Q.</li>
+  <li><b>δ: Q × Γ → Q × Γ × {L, R}</b>. δ(qᵢ, a) = (qⱼ, b, R) is drawn as an edge labelled <b>a/b,R</b>: read a, write b, move right. If nothing changes, the label is just <b>a,R</b>.</li>
+  <li><b>Acceptance:</b> L(M) is the strings that make M <b>halt in a final state</b>, starting in q₀ on the leftmost input cell. A string that is not accepted may make M run forever.</li>
+  <li><b>5-tuple encoding:</b> (A, 1, x, B, R) means δ(A, 1) = (B, x, R).</li>
+</ul>
+<h3 id="t6-fn">Computing functions (unary)</h3>
+<p>f is computable if some TM goes from q₀ w to a final state with f(w) on the tape, for every w in the domain. Numbers are written in unary (4 = 1111).</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Machine</th><th>Input → output</th><th>How it works</th></tr></thead>
+  <tbody>
+    <tr><td>x + y</td><td>x0y → (x+y)0, e.g. 11011 → 11110</td><td>Turn the 0 into 1, go to the end, turn the last 1 into 0, return. 12 moves on 11011.</td></tr>
+    <tr><td>2x</td><td>x → xx, e.g. 11 → 1111</td><td>Turn every 1 into $. Repeat: rightmost $ → 1, add a 1 at the right end. Stop when no $ remains.</td></tr>
+    <tr><td>x &gt; y ?</td><td>x0y → 1 or 0</td><td>Match a 1 from x with a 1 from y until one runs out. If x has an unmatched 1, erase and write 1; otherwise write 0.</td></tr>
+    <tr><td>Combined</td><td>x + y if x &gt; y, else 0</td><td>A Comparer sends x, y to an Adder or an Eraser. f(3, 3) = 0.</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="callout"><span class="label">Tracing tips</span>
+  <ul>
+    <li>Keep three things per step: the state, the tape, and where the head is.</li>
+    <li>The slide example on baabab (blank #) marks each b as x, writes a b after the input, then turns the x into #: it halts in q₄ with #aa#a##bbb.</li>
+    <li>The palindrome detector erases the first symbol, remembers it in the state (B for 1, C for 0), checks the last symbol (D, E), returns (F) and repeats. It accepts 1001 and 101 and rejects 0100 and 10.</li>
+  </ul>
+</div>
+<p class="practice-link"><a href="quiz.html?topic=6">Quiz Topic 6</a> or <a href="cards.html?topic=6">drill its flashcards</a>.</p>
+
 <!-- ======================= CHEAT SHEET ======================= -->
 <h2 id="cheat">Cheat sheet and traps</h2>
 <table>
@@ -326,6 +396,9 @@ F  → ( E ) | id</pre>
     <tr><td>Left recursion</td><td>A → Aα | β becomes A → βA′, A′ → αA′ | ε</td></tr>
     <tr><td>Left factoring</td><td>A → αβ₁ | αβ₂ becomes A → αA′, A′ → β₁ | β₂</td></tr>
     <tr><td>Table rule</td><td>A → α into M[A, FIRST(α)]; if α ⇒* ε, also M[A, FOLLOW(A)]</td></tr>
+    <tr><td>Blank / double cell</td><td>Blank = syntax error; two rules in a cell = not LL(1)</td></tr>
+    <tr><td>TM δ</td><td>Q × Γ → Q × Γ × {L, R}; a/b,R = read a, write b, move right</td></tr>
+    <tr><td>TM accepts</td><td>Halts in a final state; a rejected input may loop forever</td></tr>
   </tbody>
 </table>
 <ul>
@@ -340,10 +413,10 @@ F  → ( E ) | id</pre>
   </div>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261027a"></script>
-<script src="../assets/ptree.js?v=20261027a"></script>
-<script src="../assets/m2/llviz.js?v=20261027a"></script>
-<script src="../assets/app.js?v=20261027a"></script>
+<script src="../assets/m2/questions.js?v=20261103a"></script>
+<script src="../assets/ptree.js?v=20261103a"></script>
+<script src="../assets/m2/llviz.js?v=20261103a"></script>
+<script src="../assets/app.js?v=20261103a"></script>
 <script>
 (function () {
   document.getElementById('tree-xyz').innerHTML =

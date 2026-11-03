@@ -56,5 +56,29 @@ window.CARDS = [
   { t: 4, f: 'FOLLOW sets for the expression grammar', b: 'FOLLOW(E) = FOLLOW(E′) = {), $}; FOLLOW(T) = FOLLOW(T′) = {+, ), $}; FOLLOW(F) = {+, *, ), $}.' },
   { t: 4, f: 'Building the LL(1) table', b: 'For A → α: add it to M[A, a] for each a ∈ FIRST(α); if ε ∈ FIRST(α), also to M[A, b] for each b ∈ FOLLOW(A). Blank cells are errors.' },
   { t: 4, f: 'Predictive parser moves', b: 'Top = nonterminal: replace by M[top, input]. Top = matching terminal: pop and advance. Top = input = $: accept. Otherwise: error.' },
-  { t: 4, f: 'When is a grammar not LL(1)?', b: 'When some table cell gets two productions, e.g. S → aA | aB puts both in M[S, a]. Left factoring often fixes it.' }
+  { t: 4, f: 'When is a grammar not LL(1)?', b: 'When some table cell gets two productions, e.g. S → aA | aB puts both in M[S, a]. Left factoring often fixes it.' },
+
+  /* Topic 5: Building parsing tables (Lecture 9) */
+  { t: 5, f: 'Three things to compute before building the table', b: 'nullable (can X derive ε?), FIRST(X) and FOLLOW(X), in that order, each by rounds of induction until a round changes nothing (a fixed point).' },
+  { t: 5, f: 'Z ::= X Y Z | d,  Y ::= c | (empty),  X ::= a | b Y e: nullable?', b: 'Only Y. X and Z always produce at least one terminal.' },
+  { t: 5, f: 'Same grammar: FIRST sets', b: 'FIRST(Z) = {d, a, b}, FIRST(Y) = {c}, FIRST(X) = {a, b}. c is not in FIRST(Z) because X is not nullable.' },
+  { t: 5, f: 'Same grammar: FOLLOW sets (slides, no $)', b: 'FOLLOW(Z) = { }, FOLLOW(Y) = {e, d, a, b}, FOLLOW(X) = {c, d, a, b}. With the end marker, FOLLOW(Z) = {$}.' },
+  { t: 5, f: 'Rule for filling row X, column T', b: 'Put X ::= s there if T ∈ FIRST(s). If s is nullable, also put it under every T ∈ FOLLOW(X).' },
+  { t: 5, f: 'Same grammar: the parsing table', b: 'Z: a, b → Z ::= X Y Z; d → Z ::= d. Y: c → Y ::= c; a, b, d, e → Y ::= (empty). X: a → X ::= a; b → X ::= b Y e. 10 filled cells; the blanks are syntax errors.' },
+  { t: 5, f: 'Two rules in one cell', b: 'Adding Z ::= d e puts Z ::= d and Z ::= d e both in M[Z, d]. Duplicate entries mean the grammar is not LL(1). Fix by left factoring: Z ::= d W, W ::= ε | e.' },
+  { t: 5, f: 'LL(k) table columns', b: 'Every k-length sequence of terminals: for LL(2), aa, ab, ba, bb, ac, ca, …' },
+  { t: 5, f: 'Recursive descent from a grammar', b: 'One function per nonterminal, a case on the current token per rule; each terminal becomes eat(token) and each nonterminal a call. L ::= ; S L becomes SEMI ⇒ eat SEMI; S(); L().' },
+
+  /* Topic 6: Turing machines (Lecture 12) */
+  { t: 6, f: 'Turing machine tuple', b: '(Q, Σ, Γ, δ, q₀, F): states, input alphabet Σ ⊆ Γ − {blank}, tape alphabet Γ, transition function, start state, final states F ⊆ Q.' },
+  { t: 6, f: 'TM transition function', b: 'δ: Q × Γ → Q × Γ × {L, R}. δ(qᵢ, a) = (qⱼ, b, R) is drawn as an edge labelled a/b,R. If a = b, write just a,R.' },
+  { t: 6, f: 'L(M) for a Turing machine', b: 'The strings in Σ* that make M halt in a final state, starting in q₀ with the head on the leftmost input symbol. A rejected input may make M run forever.' },
+  { t: 6, f: 'Why unary?', b: 'Unary (5 = 11111) is easiest for a TM to manipulate: adding is joining blocks, doubling is copying 1s.' },
+  { t: 6, f: 'Adder TM for x + y', b: 'Input x0y. Skip x, turn the 0 into 1, run to the end, step back and turn the last 1 into 0, return to the start. Output (x + y)0. On 11011 it halts after 12 moves with 11110.' },
+  { t: 6, f: 'Doubler TM for 2x', b: 'Replace every 1 with $. Repeat: turn the rightmost $ back into 1, go to the right end and add a 1. Stop when no $ is left. 11 becomes 1111.' },
+  { t: 6, f: 'Lecture example on baabab (blank #)', b: 'Each b is marked x, copied to after the input, then the x becomes #. Halts in q₄ with #aa#a##bbb.' },
+  { t: 6, f: '5-tuple (A, 1, x, B, R)', b: 'In state A reading 1: write x, move right, go to state B. The palindrome detector is written this way.' },
+  { t: 6, f: 'Palindrome detector idea', b: 'Erase the first symbol and remember it in the state (B for 1, C for 0); run to the end; erase a matching last symbol (D, E) or reject; return (F); repeat. An empty middle means accept.' },
+  { t: 6, f: 'Combining machines', b: 'f(x, y) = x + y if x > y else 0: a Comparer routes x, y to an Adder or to an Eraser. f(5, 2) = 7, f(3, 3) = 0.' },
+  { t: 6, f: 'History in one line each', b: 'Hilbert: is there an algorithm for every proposition? Gödel 1931: incompleteness. Turing 1936: the Turing machine as a model of any possible computation.' }
 ];

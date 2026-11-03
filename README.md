@@ -4,7 +4,7 @@ A static study site for CIS*3150 Theory of Computation (Fall 2026), organized by
 
 - `index.html`: course home listing each unit.
 - `m1/`: **Midterm 1** (written Thursday, October 8, 2026), kept for final exam review.
-- `m2/`: **Midterm 2**, built lecture by lecture (currently Lectures 6–7).
+- `m2/`: **Midterm 2**, built lecture by lecture (currently Lectures 6, 7, 9 and 12).
 
 The old root URLs (`guide.html`, `quiz.html`, …) redirect to `m1/`.
 
@@ -56,7 +56,7 @@ Choices were balanced so the correct answer is not given away by length: it is t
 - **Study guide** (`m2/guide.html`): CFG design and ambiguity (Sipser 2.3, G₁–G₄, dangling else), nullable variables, ε-rule removal and Chomsky normal form, pushdown automata (M₁ for 0ⁿ1ⁿ, instantaneous descriptions, DPDAs), and predictive parsing (left recursion, left factoring, FIRST/FOLLOW, the LL(1) table and a full parse trace). Two step-through animations (`assets/m2/llviz.js`): the predictive parser on preset or typed input, and the table being filled production by production. Both compute FIRST, FOLLOW and the table themselves.
 - **Flashcards** (`m2/cards.html`): 46 cards.
 - **Topic quizzes** (`m2/quiz.html`): 77 five-choice questions with shared setups; answers checked by computation (FIRST/FOLLOW and LL(1) tables, nullable sets, parse-tree counts, PDA runs). Correct answers are spread evenly over (a)–(e) and are uniquely the longest choice in only 15% of questions.
-- **Practice exam** (`m2/exam.html`): 29 questions (8 / 6 / 7 / 8 across the four topics), in Midterm 1's format until the Midterm 2 announcement. Change `EXAM_CONFIG` in `assets/m2/questions.js` to adjust.
+- **Practice exam** (`m2/exam.html`): 29 questions (6 / 4 / 5 / 5 / 4 / 5 across the six topics), in Midterm 1's format until the Midterm 2 announcement. Change `EXAM_CONFIG` in `assets/m2/questions.js` to adjust.
 
 ## Cache busting
 

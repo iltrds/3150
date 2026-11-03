@@ -1,4 +1,4 @@
-/* CIS*3150 Midterm 2 question bank (lectures 6–7: CFGs part 2, PDAs, predictive parsing).
+/* CIS*3150 Midterm 2 question bank (lectures 6, 7, 9 and 12: CFGs part 2, PDAs, predictive parsing, parsing tables, Turing machines).
    Prof's format: five choices (a)–(e) in fixed order, shared setups (g), grammars shown as listings.
    Answers checked by computation (FIRST/FOLLOW, LL(1) tables, nullable sets, parse-tree counts, PDA runs).
    ex = class exercise (Oct 27) question as written; exv = a variant in the same style. */
@@ -14,10 +14,12 @@
     1: { name: 'CFG design and ambiguity', short: 'CFGs & ambiguity', sections: 'Sipser 2.1, Lecture 6' },
     2: { name: 'Simplifying grammars and CNF', short: 'CNF', sections: 'Sipser 2.1, Lecture 6' },
     3: { name: 'Pushdown automata', short: 'PDAs', sections: 'Sipser 2.2, Lecture 7' },
-    4: { name: 'Predictive parsing', short: 'LL(1) parsing', sections: 'Aho 2.4, Lecture 7' }
+    4: { name: 'Predictive parsing', short: 'LL(1) parsing', sections: 'Aho 2.4, Lecture 7' },
+    5: { name: 'Building parsing tables', short: 'Parse tables', sections: 'Lecture 9' },
+    6: { name: 'Turing machines', short: 'Turing machines', sections: 'Sipser 3.1, Lecture 12' }
   };
   // Practice exam: same length and pace as Midterm 1 until the Midterm 2 announcement says otherwise.
-  window.EXAM_CONFIG = { n: 29, mix: { 1: 8, 2: 6, 3: 7, 4: 8 } };
+  window.EXAM_CONFIG = { n: 29, mix: { 1: 6, 2: 4, 3: 5, 4: 5, 5: 4, 6: 5 } };
 
   var LLT = tbl(['', 'id', '+', '*', '(', ')', '$'], [
     ['E', 'E → TE′', '', '', 'E → TE′', '', ''],
@@ -39,7 +41,18 @@
     'g-lltab': '<p>The predictive parser for the expression grammar uses this parsing table (blank = error):</p>' + LLT,
     'g-ll2': '<p>Consider the grammar (start symbol S):</p>' + gram(['S → AB', 'A → aA | ε', 'B → b | c']),
     'g-conf': '<p>Consider the grammar (start symbol S):</p>' + gram(['S → aA | aB', 'A → b', 'B → c']),
-    'g-ex4': '<p>Consider the following grammar, from the alphabet {c, *, (, )}:</p>' + gram(['E → E * E | ( E ) | c'])
+    'g-ex4': '<p>Consider the following grammar, from the alphabet {c, *, (, )}:</p>' + gram(['E → E * E | ( E ) | c']),
+    'g-zyx': '<p>Consider the grammar from Lecture 9 (start symbol Z; a rule with nothing after ::= derives ε):</p>' + gram(['Z ::= X Y Z  |  d', 'Y ::= c  |  (empty)', 'X ::= a  |  b Y e']),
+    'g-rd': '<p>The recursive-descent parser from Lecture 9 has one function per nonterminal (S(), L(), E()) for this grammar:</p>' + gram(['1. S ::= IF E THEN S ELSE S      4. L ::= END', '2. S ::= BEGIN S L                5. L ::= ; S L', '3. S ::= PRINT E                  6. E ::= NUM = NUM']),
+    'g-add': '<p>The Lecture 12 Turing machine for f(x, y) = x + y in unary. Input x0y, output (x + y)0; ◊ is the blank; start q₀, accept q₄:</p>' +
+      tbl(['From', 'Read → write, move', 'To'], [['q₀', '1 → 1, R', 'q₀'], ['q₀', '0 → 1, R', 'q₁'], ['q₁', '1 → 1, R', 'q₁'], ['q₁', '◊ → ◊, L', 'q₂'], ['q₂', '1 → 0, L', 'q₃'], ['q₃', '1 → 1, L', 'q₃'], ['q₃', '◊ → ◊, R', 'q₄']]),
+    'g-dbl': '<p>The Lecture 12 Turing machine for f(x) = 2x in unary. ◊ is the blank; start q₀, accept q₃:</p>' +
+      tbl(['From', 'Read → write, move', 'To'], [['q₀', '1 → $, R', 'q₀'], ['q₀', '◊ → ◊, L', 'q₁'], ['q₁', '1 → 1, L', 'q₁'], ['q₁', '$ → 1, R', 'q₂'], ['q₂', '1 → 1, R', 'q₂'], ['q₂', '◊ → 1, L', 'q₁'], ['q₁', '◊ → ◊, R', 'q₃']]),
+    'g-tmex': '<p>The Lecture 12 example. Q = {q₀, …, q₄}, Γ = {a, b, x, #}, blank #, Σ = {a, b}, start q₀, F = {q₄}. A label a,R leaves the symbol unchanged:</p>' +
+      tbl(['From', 'Label', 'To'], [['q₀', 'a,R', 'q₀'], ['q₀', 'b/x,R', 'q₁'], ['q₀', '#,R', 'q₄'], ['q₁', 'a,R and b,R', 'q₁'], ['q₁', '#,R', 'q₂'], ['q₂', 'a,R and b,R', 'q₂'], ['q₂', '#/b,R', 'q₃'], ['q₃', 'a,L and b,L and #,L', 'q₃'], ['q₃', 'x/#,R', 'q₀']]),
+    'g-pal': '<p>The Lecture 12 palindrome detector for strings of 0s and 1s, as 5-tuples (state, read, write, next state, move). ␣ is the blank; A is the start state and Z the accept state:</p>' +
+      gram(['(A,1,␣,B,R)  (A,0,␣,C,R)  (A,␣,␣,Z,R)', '(B,0,0,B,R)  (B,1,1,B,R)  (B,␣,␣,D,L)', '(C,0,0,C,R)  (C,1,1,C,R)  (C,␣,␣,E,L)', '(D,1,␣,F,L)  (D,␣,␣,Z,L)', '(E,0,␣,F,L)  (E,␣,␣,Z,L)', '(F,0,0,F,L)  (F,1,1,F,L)  (F,␣,␣,A,R)']),
+    'g-comb': '<p>Lecture 12 combines machines: f(x, y) = x + y if x &gt; y, and 0 if x ≤ y. A Comparer sends x, y to an Adder when x &gt; y and to an Eraser (output 0) when x ≤ y.</p>'
   };
 
   var N5 = ['1', '2', '3', '4', '5'];
@@ -324,7 +337,127 @@
       x: "The common prefix is iEtS. Factor it out and let S′ choose between eS and ε (the textbook version). (a) leaves S′ with two rules that both start with S; (b) makes every if need an else; (c) removes S → a, so S can never finish and generates nothing." },
     { id: 'ex-5d', exv: 1, t: 4, s: 'Left factoring', q: 'Which grammar is obtained by correctly left factoring E → T + E | T?',
       c: ["E → TE′<br>E′ → +E | ε","E → T + E′<br>E′ → E | ε","E → E′ + E | T<br>E′ → T","E → TE′<br>E′ → +E","None of these"], a: 0,
-      x: "The common prefix is T. Factor it out: E → TE′, and E′ chooses between + E (more terms) and ε (done). (b) forces a + after the first T; (c) is still not factored, since both E-rules start with T; (d) has no ε, so E never finishes." }
+      x: "The common prefix is T. Factor it out: E → TE′, and E′ chooses between + E (more terms) and ε (done). (b) forces a + after the first T; (c) is still not factored, since both E-rules start with T; (d) has no ε, so E never finishes." },
+    /* Topic 5: Lecture 9, building predictive parsing tables. Topic 6: Lecture 12, Turing machines.
+       Written in the class-exercise style (exv) ahead of the Nov 3 exercise. Answers checked by computation. */
+    { id: 'c5-01', exv: 1, g: 'g-zyx', t: 5, s: 'Nullable', q: 'Which nonterminals are nullable?',
+      c: ["X only","Y only","Y and Z","X and Y","None of them"], a: 1,
+      x: "Y ::= (empty) makes Y nullable. X always produces a or b…e, and Z needs X or d, so neither can vanish. One round of induction already reaches the fixed point." },
+    { id: 'c5-02', exv: 1, g: 'g-zyx', t: 5, s: 'FIRST sets', q: 'What is FIRST(Z)?',
+      c: ["{d}","{a, b, c, d}","{a, b}","{a, b, d}","None of these"], a: 3,
+      x: "Z ::= d gives d. Z ::= X Y Z starts with X, and X is not nullable, so only FIRST(X) = {a, b} is added. c would only get in if X could vanish." },
+    { id: 'c5-03', exv: 1, g: 'g-zyx', t: 5, s: 'FOLLOW sets', q: 'What is FOLLOW(X)?',
+      c: ["{a, b, c, d}","{c}","{c, e}","{a, b, c, d, e}","None of these"], a: 0,
+      x: "In Z ::= X Y Z, X is followed by Y Z. FIRST(Y) = {c}; Y is nullable, so FIRST(Z) = {a, b, d} is added too. Z is not nullable, so it stops there." },
+    { id: 'c5-04', exv: 1, g: 'g-zyx', t: 5, s: 'FOLLOW sets', q: 'What is FOLLOW(Y)?',
+      c: ["{c}","{e}","{a, b, d, e}","{a, b, d}","None of these"], a: 2,
+      x: "Y is followed by Z in Z ::= X Y Z, giving FIRST(Z) = {a, b, d}, and by e in X ::= b Y e. So FOLLOW(Y) = {a, b, d, e}." },
+    { id: 'c5-05', exv: 1, g: 'g-zyx', t: 5, s: 'FOLLOW sets', q: 'Following the lecture slides (no end marker $ is added), what is FOLLOW(Z)?',
+      c: ["{a, b, d}","{c}","{e}","{a, b, c, d}","{ } (empty)"], a: 4,
+      x: "Z appears only at the right end of its own rule Z ::= X Y Z, which adds FOLLOW(Z) to itself: nothing new. The slides leave it as { }. With the end-marker convention it would be {$}, because Z is the start symbol." },
+    { id: 'c5-06', exv: 1, g: 'g-zyx', t: 5, s: 'Parsing table', q: 'What goes in the parsing table at row Y, column d?',
+      c: ["Y ::= (empty rule)","Blank (syntax error)","Y ::= c","Z ::= d","None of these"], a: 0,
+      x: "The empty rule is nullable and d ∈ FOLLOW(Y), so Y ::= goes in every column of FOLLOW(Y): a, b, d and e. Y ::= c only goes under c." },
+    { id: 'c5-07', exv: 1, g: 'g-zyx', t: 5, s: 'Parsing table', q: 'What goes in the parsing table at row Z, column c?',
+      c: ["Blank (syntax error)","Z ::= X Y Z","Z ::= d","Y ::= c","None of these"], a: 0,
+      x: "c is in neither FIRST(X Y Z) = {a, b} nor FIRST(d), and Z is not nullable, so the cell stays blank. A blank cell means the parser reports a syntax error." },
+    { id: 'c5-08', exv: 1, g: 'g-zyx', t: 5, s: 'Parsing table', q: 'With columns a, b, c, d and e, how many cells of the parsing table are filled?',
+      c: ["8","9","11","10","None of these"], a: 3,
+      x: "Row Z: a and b (Z ::= X Y Z) and d (Z ::= d), 3 cells. Row Y: c (Y ::= c) plus a, b, d and e (the empty rule), 5 cells. Row X: a and b, 2 cells. Total 10, and no cell holds two rules." },
+    { id: 'c5-09', exv: 1, g: 'g-zyx', t: 5, s: 'LL(1) conflicts', q: 'The rule Z ::= d e is added to the grammar. What happens to the table?',
+      c: ["M[Z, e] gets a second rule, so the grammar is not LL(1)","M[Z, d] gets two rules, so the grammar is not LL(1)","Nothing changes; the table is still conflict-free","Every cell in row Y changes, since FOLLOW(Z) grows","None of these"], a: 1,
+      x: "FIRST(d) = FIRST(d e) = {d}, so both rules go in row Z, column d. A cell with two rules means one lookahead symbol cannot choose, so the grammar is not LL(1)." },
+    { id: 'c5-10', exv: 1, t: 5, s: 'Left factoring', q: 'Lecture 9 fixes Z ::= X Y Z | d | d e. Which grammar is the correct left factoring of the two d rules?',
+      c: ["Z ::= W d,  W ::= ε | e","Z ::= d | W,  W ::= d e","Z ::= d W,  W ::= ε | e","Z ::= d e W,  W ::= d","None of these"], a: 2,
+      x: "Take out the common d and let W choose between nothing and e (the slide writes W ::= with an empty right side). (a) puts the choice before d; (b) still has two Z-rules that start with d; (d) generates different strings." },
+    { id: 'c5-11', exv: 1, t: 5, s: 'LL(1)', q: 'True or false: a grammar is LL(1) when its predictive parsing table has no cell with two or more rules.',
+      c: ["True","False"], a: 0,
+      x: "That is the lecture’s definition: no duplicate entries means LL(1) (Left-to-right parse, Leftmost derivation, 1 symbol of lookahead)." },
+    { id: 'c5-12', exv: 1, t: 5, s: 'Parsing table', q: 'When is X ::= s entered in row X, column T of the parsing table?',
+      c: ["Only when T ∈ FOLLOW(X), whether or not s is nullable","When T ∈ FIRST(X), or X is the start symbol and T is $","When T ∈ FIRST(s), or s is nullable and T ∈ FOLLOW(X)","When T ∈ FOLLOW(s), or T ∈ FIRST(X) and s is nullable","None of these"], a: 2,
+      x: "The two rules from the slide: T ∈ FIRST(s) puts X ::= s under T; and if s is nullable, it also goes under every T ∈ FOLLOW(X)." },
+    { id: 'c5-13', exv: 1, t: 5, s: 'LL(k)', q: 'In an LL(2) parsing table, the columns are',
+      c: ["every sequence of 2 terminals (aa, ab, ba, …)","pairs of nonterminals (XY, YZ, …)","the terminals, plus the end marker $","the terminals that appear twice in the grammar","None of these"], a: 0,
+      x: "An LL(k) table has a column for every k-length sequence of terminals, so LL(2) has aa, ab, ba, bb, ac, ca, …" },
+    { id: 'c5-14', exv: 1, t: 5, s: 'Fixed point', q: 'Computing nullable, FIRST and FOLLOW in rounds of induction stops when',
+      c: ["every set contains at least one terminal","each set has been updated exactly once","the start symbol’s FOLLOW set contains $","a full round changes nothing","None of these"], a: 3,
+      x: "Repeat the rules until a whole round adds nothing. On the slides, nullable is fixed after one round, FIRST after two and FOLLOW after two; computing FOLLOW(X) before FOLLOW(Y) would have needed a third round." },
+    { id: 'c5-15', exv: 1, g: 'g-rd', t: 5, s: 'Recursive descent', q: 'What does the function L() do when the current token is ;?',
+      c: ["eat ;, then call S(), then call L()","eat ;, then call L(), then call S()","call S(), then eat ;","report a syntax error","None of these"], a: 0,
+      x: "Rule 5 is L ::= ; S L, so L() eats the ; and then calls the functions for S and L in that order. Each rule’s right side becomes a sequence of eat() calls and function calls." },
+    { id: 'c5-16', exv: 1, g: 'g-rd', t: 5, s: 'Recursive descent', q: 'Which token sequence does S() parse without an error?',
+      c: ["BEGIN PRINT NUM END","IF NUM = NUM THEN PRINT NUM = NUM","PRINT NUM = NUM ; PRINT NUM = NUM","BEGIN PRINT NUM = NUM END","None of these"], a: 3,
+      x: "S ::= BEGIN S L with S ::= PRINT E (E ::= NUM = NUM) and L ::= END. (a) has E as a lone NUM; (b) is missing ELSE S; (c) is two statements, and ; only joins statements inside BEGIN … END." },
+
+    { id: 'c6-01', exv: 1, t: 6, s: 'Definition', q: 'A Turing machine’s transition function δ maps',
+      c: ["Q × Σ → Q","Q × Γ → Q × Γ × {L, R}","Q × Σ_ε × Γ_ε → P(Q × Γ_ε)","Q × Γ → Γ × {L, R}","None of these"], a: 1,
+      x: "From the current state and tape symbol, δ gives the next state, the symbol to write and the direction to move. (a) is a DFA, (c) is a PDA, and (d) forgets the next state." },
+    { id: 'c6-02', exv: 1, t: 6, s: 'Transitions', q: 'On a Turing machine diagram, the edge label a/b,R means',
+      c: ["read a, write b, move right","read a, push b, move right","read b, write a, move right","write a, read b, move right","None of these"], a: 0,
+      x: "δ(qᵢ, a) = (qⱼ, b, R): replace the current symbol a by b and move one cell right." },
+    { id: 'c6-03', exv: 1, t: 6, s: 'Transitions', q: 'An edge labelled just “b,L” means',
+      c: ["read b, erase it, move left","read b, leave it, move left","read anything, write b, move left","read b, then halt after moving left","None of these"], a: 1,
+      x: "When the symbol written equals the symbol read, the slides write “b,L” instead of “b/b,L”." },
+    { id: 'c6-04', exv: 1, t: 6, s: 'Definition', q: 'In the tuple (Q, Σ, Γ, δ, q₀, F), which is true?',
+      c: ["Γ ⊆ Σ","blank ∈ Σ","F ⊆ Γ","Σ ⊆ Γ − {blank}","None of these"], a: 3,
+      x: "The input alphabet is part of the tape alphabet and never contains the blank. F ⊆ Q (states, not symbols)." },
+    { id: 'c6-05', exv: 1, t: 6, s: 'Acceptance', q: 'L(M), the language accepted by a Turing machine M, is the set of input strings that cause M to',
+      c: ["halt in a final state","read every symbol of the input","halt, in any state","erase its whole tape","None of these"], a: 0,
+      x: "M starts in q₀ with the head on the leftmost input cell, and accepts if it halts in a final state." },
+    { id: 'c6-06', exv: 1, t: 6, s: 'Acceptance', q: 'True or false: if a Turing machine does not accept an input, it must halt in a non-final state.',
+      c: ["True","False"], a: 1,
+      x: "If an input is not accepted, the machine may never halt at all. That possibility is what leads to undecidable problems." },
+    { id: 'c6-07', exv: 1, t: 6, s: 'Mechanical procedure', q: 'Which is NOT part of Turing’s idea of a mechanical procedure?',
+      c: ["A finite number of instructions","Input that is not restricted in size","Output of unlimited size","Unlimited storage space","Infinitely many internal states"], a: 4,
+      x: "The procedure has a finite number of internal states; the unlimited part is the tape (input, storage and output)." },
+    { id: 'c6-08', exv: 1, t: 6, s: 'Unary', q: 'In unary, the number 4 is written as',
+      c: ["100","0000","1111","11110","None of these"], a: 2,
+      x: "Unary uses one 1 per unit. The slides prefer it because it is easier for a Turing machine to manipulate (5 = 11111, binary 101)." },
+    { id: 'c6-09', exv: 1, g: 'g-add', t: 6, s: 'Adder', q: 'What is the input tape for f(3, 2)?',
+      c: ["11011","111011","1110110","11111","None of these"], a: 1,
+      x: "The input is x0y in unary: 111, the delimiter 0, then 11." },
+    { id: 'c6-10', exv: 1, g: 'g-add', t: 6, s: 'Adder', q: 'What is on the tape when the machine halts on input 111011?',
+      c: ["11111","111101","1111100","111110","None of these"], a: 3,
+      x: "The output format is (x + y)0: five 1s, then the 0. The machine turns the delimiter into a 1, then turns the last 1 into a 0." },
+    { id: 'c6-11', exv: 1, g: 'g-add', t: 6, s: 'Adder', q: 'Starting from 11011 at time 0, after how many moves does the machine halt in q₄?',
+      c: ["10","11","12","13","None of these"], a: 2,
+      x: "As on the slides: 5 moves right to the blank (times 1–5), 1 move left into q₂, 1 move writing the 0, 4 moves left through the 1s to the blank, and 1 move right into q₄: halted at time 12." },
+    { id: 'c6-12', exv: 1, g: 'g-add', t: 6, s: 'Adder', q: 'What is the job of the move q₂: 1 → 0, L?',
+      c: ["It undoes the extra 1 created when the delimiter became a 1","It marks where x ends so that q₃ can stop in the right place","It erases the 0 delimiter so that x and y join into one block","It checks that y is not empty before the machine returns left","None of these"], a: 0,
+      x: "q₀ wrote a 1 over the delimiter, so there is one 1 too many. q₂ changes the last 1 into the 0 that ends the output (x + y)0." },
+    { id: 'c6-13', exv: 1, g: 'g-dbl', t: 6, s: 'Doubler', q: 'What does the machine leave on the tape for input 111?',
+      c: ["111","11111","$$$111","111111","None of these"], a: 3,
+      x: "f(x) = 2x in unary: three 1s become six." },
+    { id: 'c6-14', exv: 1, g: 'g-dbl', t: 6, s: 'Doubler', q: 'What is the $ used for?',
+      c: ["It marks the right end of the input","It separates x from its copy","It is the machine’s blank symbol","It marks a 1 not yet copied","None of these"], a: 3,
+      x: "First every 1 becomes $. Then, repeatedly, the rightmost $ is turned back into 1 and a new 1 is added at the right end, until no $ remains." },
+    { id: 'c6-15', exv: 1, g: 'g-tmex', t: 6, s: 'Tracing', q: 'What is on the tape when the machine halts on baabab###…?',
+      c: ["baabab#bbb","xaaxax#bbb","aaa#bbb","#aa#a##bbb","None of these"], a: 3,
+      x: "Each b is first marked x, a b is written after the blank that ends the input, and then the x becomes #. The a’s stay where they were. Checked by simulation: it halts in q₄ after 45 moves." },
+    { id: 'c6-16', exv: 1, g: 'g-tmex', t: 6, s: 'Tracing', q: 'In general, what does this machine do?',
+      c: ["Accepts only the strings with equal numbers of a’s and b’s","Copies each b past the end and blanks out the original","Copies the whole input to after a blank, leaving the original","Erases every a and moves the b’s together at the left end","None of these"], a: 1,
+      x: "q₀ skips a’s; on a b it writes x, runs right past the end (q₁, q₂), writes a b, comes back (q₃) and turns the x into #. When q₀ reaches the blank after the input, it accepts." },
+    { id: 'c6-17', exv: 1, t: 6, s: 'Encoding', q: 'In the lecture’s 5-tuple encoding, (A, 1, x, B, R) means',
+      c: ["in state A reading 1: write x, move right, go to B","in state A reading x: write 1, move right, go to B","in state B reading 1: write x, move right, go to A","in state A reading 1: move right to B, then write x","None of these"], a: 0,
+      x: "(current state, symbol read, symbol written, next state, direction): δ(A, 1) = (B, x, R)." },
+    { id: 'c6-18', exv: 1, g: 'g-pal', t: 6, s: 'Palindromes', q: 'Which input does the palindrome detector accept?',
+      c: ["0100","10","001","1001","None of these"], a: 3,
+      x: "It erases the first symbol, remembers it in state B (1) or C (0), checks and erases a matching last symbol (D or E), returns (F) and repeats. 1001 empties out and reaches Z; 0100, 10 and 001 each find a mismatch and halt in a non-accepting state." },
+    { id: 'c6-19', exv: 1, g: 'g-pal', t: 6, s: 'Palindromes', q: 'What does being in state B tell the machine?',
+      c: ["The string has odd length so far","The last symbol read was a 1","The first symbol was 1 (now erased)","A 0 must be found at the right end","None of these"], a: 2,
+      x: "(A, 1, ␣, B, R): the machine erases a leading 1 and uses state B to remember it, so that D can check the last symbol is also 1." },
+    { id: 'c6-20', exv: 1, g: 'g-comb', t: 6, s: 'Combining machines', q: 'Using the block diagram, what is f(3, 3)?',
+      c: ["6","3","1","0","None of these"], a: 3,
+      x: "3 > 3 is false, so the Comparer sends x, y to the Eraser, which outputs 0. Only when x > y does the Adder run." },
+    { id: 'c6-21', exv: 1, t: 6, s: 'Comparer', q: 'For f(x, y) = 1 if x > y and 0 if x ≤ y, what is the input tape for x = 2, y = 3?',
+      c: ["11111","110111","1100111","23","None of these"], a: 1,
+      x: "Input x0y in unary: 11, the delimiter 0, then 111. The machine matches 1s from x and y; x runs out first, so it erases the tape and writes 0." },
+    { id: 'c6-22', exv: 1, t: 6, s: 'History', q: 'Which pairing is correct?',
+      c: ["Gödel, 1931: the Turing machine as a model of computation","Turing, 1936: the Turing machine as a model of computation","Hilbert, 1931: the incompleteness theorem","Turing, 1931: the incompleteness theorem","None of these"], a: 1,
+      x: "Hilbert asked for an algorithm deciding every mathematical proposition; Gödel’s incompleteness theorem (1931) showed some questions cannot be answered yes or no; Turing proposed his machine in 1936." },
+    { id: 'c6-23', exv: 1, t: 6, s: 'TM vs PDA', q: 'What can a Turing machine do that a PDA cannot?',
+      c: ["Keep a finite number of states in its control","Read its input symbols from left to right","Move its head both ways and write on the tape","Make nondeterministic choices between moves","None of these"], a: 2,
+      x: "The tape is input, storage and output at once, and the head can move left or right and overwrite cells. A PDA reads its input once, left to right, and can only use its stack." }
   ];
 
   Q.forEach(function (q) { q.fmt = 'prof'; q.keep = true; });

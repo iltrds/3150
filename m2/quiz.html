@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261027a">
+<link rel="stylesheet" href="../assets/style.css?v=20261103a">
 </head>
 <body data-unit="m2">
 <header id="site-head"></header>
@@ -54,14 +54,14 @@
   <section id="done" hidden class="quiz-area"></section>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261027a"></script>
-<script src="../assets/app.js?v=20261027a"></script>
+<script src="../assets/m2/questions.js?v=20261103a"></script>
+<script src="../assets/app.js?v=20261103a"></script>
 <script>
 (function () {
   var params = new URLSearchParams(location.search);
-  var t0 = parseInt(params.get('topic'), 10);
-  var selected = { 1: true, 2: true, 3: true, 4: true };
-  if (t0 >= 1 && t0 <= 4) { selected = { 1: false, 2: false, 3: false, 4: false }; selected[t0] = true; }
+  var tsel = (params.get('topic') || '').split(',').map(Number).filter(function (t) { return TOPICS[t]; });
+  var selected = {};
+  Object.keys(TOPICS).forEach(function (k) { selected[k] = !tsel.length || tsel.indexOf(Number(k)) >= 0; });
   var length = 10;
   var missed = App.store.get('missed', {}); // id -> true
 
