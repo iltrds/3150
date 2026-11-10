@@ -119,5 +119,17 @@ window.CARDS = [
   { t: 6, f: 'The tape (video lecture)', b: 'Infinite in both directions; each cell holds one symbol of Γ at a time; used for input, storage and output.' },
   { t: 6, f: 'Where the head should finish', b: 'On the leftmost symbol of the result, in the final state: q₀ w ⊢* q_f f(w). ⊢* means zero or more moves.' },
   { t: 6, f: 'Turing’s thesis', b: 'Every effectively calculable function is computable by a Turing machine (the Church–Turing thesis).' },
-  { t: 6, f: 'Combining machines', b: 'Divide and conquer: a Comparer decides whether the Adder or the Eraser runs. The adder’s trailing 0 lets its result feed the next machine.' }
+  { t: 6, f: 'Combining machines', b: 'Divide and conquer: a Comparer decides whether the Adder or the Eraser runs. The adder’s trailing 0 lets its result feed the next machine.' },
+
+  /* Lecture 14 video */
+  { t: 6, f: 'Size of a number’s representation', b: 'Logarithmic: about log₁₀ n decimal digits or ⌈log₂ n⌉ bits. 205 needs 8 bits (next power of two is 256); 207 needs 8 and 301 needs 9. Unary needs n symbols.' },
+  { t: 6, f: '207 × 301: three ways (video lecture)', b: 'Unary × unary: at least 200 × 300 × 2 ≈ 120,000 steps (the slide’s 12,000 is missing a zero). Binary × unary: 8 × 300 × 2 ≈ 4,800. Binary × binary: 8 × 9 = 72, × 2 ≈ 144.' },
+  { t: 7, f: 'Figure 4.10: classes of languages', b: 'regular ⊂ context-free ⊂ decidable (recursive) ⊂ Turing-recognizable (RE).' },
+  { t: 7, f: 'Enumerable (textbook: countable)', b: 'There is a bijection between the set and N = {1, 2, 3, …}. The evens are enumerable via f(n) = 2n.' },
+  { t: 7, f: 'Positive rationals are enumerable', b: 'Sweep the n/m grid diagonal by diagonal, skipping repeats: 1/1, 2/1, 1/2, 3/1, 1/3, 4/1, 3/2, 2/3, 1/4, 5/1, … (2/2, 4/2, 3/3, 2/4 are skipped).' },
+  { t: 7, f: 'Reals are not enumerable', b: 'Diagonalization: given any list, change the nth digit of the nth number (the professor subtracts from 8, to avoid 0.4999… = 0.5). The new real differs from every listed one.' },
+  { t: 7, f: 'Prefix encoding', b: 'No code is a prefix of another (110, 1110, 11110, 111110, 10, 0), so a bit string splits only one way. The rarest symbol, the arrow, gets the longest code.' },
+  { t: 7, f: 'L_d and the barber', b: 'Like the barber who shaves everyone who does not shave himself: T_i accepting i and T_i not accepting i both lead to a contradiction.' },
+  { t: 8, f: 'Undecidable does not mean unsolvable instances', b: 'No algorithm answers every PCP instance, but individual instances can be solved. Antivirus and medicine are the professor’s analogies.' },
+  { t: 8, f: 'PCP on the quiz and final', b: 'The professor said to expect one or two PCP problems on the next quiz and on the final.' }
 ];

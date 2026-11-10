@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261110c">
+<link rel="stylesheet" href="../assets/style.css?v=20261110d">
 <style>
   .diagram svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 1.2em 0 .6em; }
   .diagram .st { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.4; }
@@ -45,7 +45,7 @@
     <tr><td>4</td><td><a href="#t4">Predictive parsing</a></td><td>L07 Predictive parsers</td><td>Aho, Sethi &amp; Ullman 2.4 and pp. 176–190</td></tr>
     <tr><td>5</td><td><a href="#t5">Building parsing tables</a></td><td>L09 Parsing tables</td><td>Appel 3.2 (nullable, FIRST, FOLLOW)</td></tr>
     <tr><td>6</td><td><a href="#t6">Turing machines</a></td><td>L12 Turing machines, L13</td><td>Sipser 3.1</td></tr>
-    <tr><td>7</td><td><a href="#t7">Recursive and RE languages</a></td><td>L13 Enumerability</td><td>Sipser 3.3, 4.2</td></tr>
+    <tr><td>7</td><td><a href="#t7">Decidability, enumerability and RE languages</a></td><td>L13, L14</td><td>Sipser 4.2 (pp. 202–209)</td></tr>
     <tr><td>8</td><td><a href="#t8">Post Correspondence Problem</a></td><td>L14 PCP</td><td>Sipser 5.2</td></tr>
   </tbody>
 </table>
@@ -404,6 +404,7 @@ X ::= a  |  b Y e</pre>
 <h3 id="t6-video">What the professor stressed in the video lecture</h3>
 <ul>
   <li><b>Efficiency counts.</b> “In my class it is not sufficient to write a working program. It is also necessary to write an efficient working program.” For 50 × 36, unary takes about 50 × 36 = 1800 transitions; in binary, 50 = 110010 and 36 = 100100 are 6 bits each, so about 6 × 6 = 36. Unary is easier to program but exponential in the input size. Think O(n·m) versus O(lg n · lg m).</li>
+  <li><b>Size of a number</b> (Lecture 14): a representation’s length is logarithmic in the number. 205 needs 8 bits (next power of two is 256); 207 needs 8 and 301 needs 9. For 207 × 301: unary × unary takes at least about 120,000 steps (the slide’s 12,000 is missing a zero), binary × unary about 4,800, binary × binary about 8 × 9 = 72 (× 2 = 144).</li>
   <li><b>The tape</b> is infinite in both directions; each cell holds one symbol at a time.</li>
   <li><b>The 7-tuple</b> (Q, Γ, B, Σ, δ, q₀, F) lists the blank B separately.</li>
   <li><b>Finish with the head on the first symbol of the result</b>, in the final state: q₀ w ⊢* q_f f(w), where ⊢* is zero or more moves. After 2 + 2 the head sits on the first 1 of 11110.</li>
@@ -414,7 +415,7 @@ X ::= a  |  b Y e</pre>
 <p class="practice-link"><a href="quiz.html?topic=6">Quiz Topic 6</a> or <a href="cards.html?topic=6">drill its flashcards</a>.</p>
 
 <!-- ======================= TOPIC 7 ======================= -->
-<h2 id="t7">Topic 7: Recursive and RE languages, and encoding TMs (Lecture 13)</h2>
+<h2 id="t7">Topic 7: Decidability, enumerability and encoding TMs (Lectures 13–14)</h2>
 <p>Lecture 13 opens with more machines to build (a palindrome detector, adding one to a binary number, the 1ˣ#1ʸ## multiplier) and then asks which languages a Turing machine can accept at all.</p>
 <div class="table-scroll">
 <table>
@@ -445,6 +446,16 @@ X ::= a  |  b Y e</pre>
 </ul>
 <h3 id="t7-diag">A non-RE language: L_d</h3>
 <p>With an encoding, every TM is some T_k, so they can be listed T₁, T₂, …; invalid encodings count as a machine that accepts nothing. Define <b>L_d = { k | T_k does not accept input k }</b>. If some T_i accepted L_d, feed it i: if T_i accepts i then i ∉ L_d, so it should not; if it does not accept i then i ∈ L_d, so it should. Both contradict, so <b>L_d is not RE</b>. This is <b>diagonalization</b>: complementing the diagonal of the “T_k on input k” table builds a row that differs from every machine’s row.</p>
+<h3 id="t7-enum">Decidability and enumerability (Lecture 14)</h3>
+<ul>
+  <li><b>Figure 4.10:</b> regular ⊂ context-free ⊂ decidable (recursive) ⊂ Turing-recognizable (RE).</li>
+  <li><b>Enumerable</b> (the textbook says countable): there is a bijection with N = {1, 2, 3, …}. The professor prefers “enumerable” because enumerating does not have to finish.</li>
+  <li><b>Even numbers:</b> enumerable via f(n) = 2n.</li>
+  <li><b>Positive rationals:</b> enumerable. Sweep the n/m grid diagonal by diagonal and skip repeats: 1/1, 2/1, 1/2, 3/1, 1/3, 4/1, 3/2, 2/3, 1/4, 5/1, … (2/2, 4/2, 3/3 and 2/4 are skipped).</li>
+  <li><b>Reals:</b> not enumerable. Given any list, change the nth digit of the nth number; the new number differs from every number in the list. He subtracts each digit from 8, not 9, to avoid expansions like 0.4999…, which equals 0.5.</li>
+  <li><b>The encoding is a prefix code:</b> no code starts another, so the bits split only one way. The full string for δ(q₂, 1) → (q₃, 0, R) is <code>10011010111110101011001101110</code>.</li>
+  <li><b>L_d</b> works like the barber who shaves everyone who does not shave himself: both answers contradict.</li>
+</ul>
 <p class="practice-link"><a href="quiz.html?topic=7">Quiz Topic 7</a> or <a href="cards.html?topic=7">drill its flashcards</a>.</p>
 
 <!-- ======================= TOPIC 8 ======================= -->
@@ -475,6 +486,15 @@ X ::= a  |  b Y e</pre>
   <li><b>PCP and CFGs:</b> G_u has S → uᵢ S i | uᵢ i, and G_v the same with vᵢ. The index trail records the dominoes used, so G_u and G_v share a string exactly when the instance has a solution (for 011/10111, 111/11: 111011111212).</li>
   <li><b>Consequences:</b> it is undecidable whether two CFGs have disjoint languages, and whether a CFG is ambiguous (S_new → S_u | S_v is ambiguous exactly when the instance has a solution).</li>
 </ul>
+<div class="callout"><span class="label">From the Lecture 14 video</span>
+  <ul>
+    <li><b>Expect one or two PCP problems on the next quiz and on the final</b>, in the professor’s words.</li>
+    <li>wᵢ and xᵢ are strings, not single symbols.</li>
+    <li>Undecidable does not mean an instance can’t be solved: no algorithm works for <i>every</i> instance (his analogies: antivirus software and medicine).</li>
+    <li>G_u has two rules per domino: S → uᵢ S i continues, and S → uᵢ i finishes the derivation.</li>
+    <li>MPCP allows <i>zero</i> or more pairs after the forced first one.</li>
+  </ul>
+</div>
 <p class="practice-link"><a href="quiz.html?topic=8">Quiz Topic 8</a> or <a href="cards.html?topic=8">drill its flashcards</a>.</p>
 
 <!-- ======================= CHEAT SHEET ======================= -->
@@ -501,6 +521,7 @@ X ::= a  |  b Y e</pre>
     <tr><td>TM accepts</td><td>Halts in a final state; a rejected input may loop forever</td></tr>
     <tr><td>Unary vs binary</td><td>50 × 36: about 1800 steps in unary vs 36 in binary; efficiency is marked</td></tr>
     <tr><td>RE vs recursive</td><td>RE: accepted, may loop on non-members. Recursive: halts on every input</td></tr>
+    <tr><td>Enumerable</td><td>Bijection with N. Evens and positive rationals: yes. Reals: no (diagonalization)</td></tr>
     <tr><td>L_d</td><td>{ k | T_k does not accept k }: not RE, by diagonalization</td></tr>
     <tr><td>TM encoding</td><td>110 , / 1110 R / 11110 L / 111110 → / 10 is 1 / 0 is 0; states in binary</td></tr>
     <tr><td>PCP</td><td>Undecidable; repeats allowed; implies CFG disjointness and ambiguity are undecidable</td></tr>
@@ -518,10 +539,10 @@ X ::= a  |  b Y e</pre>
   </div>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261110c"></script>
-<script src="../assets/ptree.js?v=20261110c"></script>
-<script src="../assets/m2/llviz.js?v=20261110c"></script>
-<script src="../assets/app.js?v=20261110c"></script>
+<script src="../assets/m2/questions.js?v=20261110d"></script>
+<script src="../assets/ptree.js?v=20261110d"></script>
+<script src="../assets/m2/llviz.js?v=20261110d"></script>
+<script src="../assets/app.js?v=20261110d"></script>
 <script>
 (function () {
   document.getElementById('tree-xyz').innerHTML =
