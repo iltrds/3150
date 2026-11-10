@@ -63,7 +63,9 @@
     'g-pcp2': '<p>A PCP instance over Σ = {0, 1} from Lecture 14:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '011', '10111'], ['2', '111', '11']]),
     'g-pcp3': '<p>Another PCP instance from Lecture 14:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '1', '111'], ['2', '10111', '10'], ['3', '10', '0']]),
     'g-pcpcd': '<p>The Lecture 14 class-discussion instance:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '10', '101'], ['2', '011', '11'], ['3', '101', '011']]),
-    'g-pcpx': '<p>An instance from the Lecture 14 exercises slide, over Σ = {0, 1}:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '01', '010'], ['2', '110', '00'], ['3', '010', '101']])
+    'g-pcpx': '<p>An instance from the Lecture 14 exercises slide, over Σ = {0, 1}:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '01', '010'], ['2', '110', '00'], ['3', '010', '101']]),
+    'g-enc12': '<p>The machine from the Encoding slide of Lecture 12 (the a/b example with a → 0 and b → 1). Blank #, start A, final F. Each row is a 5-tuple (state, read, write, next state, move):</p>' +
+      gram(['(A,0,0,A,R)  (A,1,x,B,R)  (A,#,#,F,R)', '(B,0,0,B,R)  (B,1,1,B,R)  (B,#,#,C,R)', '(C,0,0,C,R)  (C,1,1,C,R)  (C,#,1,E,R)', '(E,0,0,E,L)  (E,1,1,E,L)  (E,#,#,E,L)  (E,x,#,A,R)'])
   };
 
   var N5 = ['1', '2', '3', '4', '5'];
@@ -589,7 +591,50 @@
       x: "Disjointness: L(G_u) ∩ L(G_v) ≠ ∅ exactly when the instance has a solution. Ambiguity: S_new → S_u | S_v is ambiguous exactly when some string is in both. A DFA accepting a string is easily decidable." },
     { id: 'c8-15', exv: 1, t: 8, s: 'PCP and CFGs', q: 'In the ambiguity proof, the grammar with S_new → S_u | S_v is ambiguous exactly when',
       c: ["G_u is ambiguous on its own","the instance has no solution","some string is derived by both G_u and G_v","S_u and S_v derive the same number of strings","None of these"], a: 2,
-      x: "A string derivable from both S_u and S_v has two parse trees under S_new, and that happens exactly when the PCP instance has a solution. So deciding ambiguity would decide PCP." }
+      x: "A string derivable from both S_u and S_v has two parse trees under S_new, and that happens exactly when the PCP instance has a solution. So deciding ambiguity would decide PCP." },
+    /* Lecture 12 video: points the professor stressed out loud (src: 'lecture'). Checked by computation. */
+    { id: 'v12-01', src: 'lecture', exv: 1, t: 6, s: 'Efficiency', q: 'In the video lecture, the professor multiplies 50 × 36. About how many transitions does that take with unary input, compared with binary?',
+      c: ["About 86 in unary and about 12 in binary","About 1800 in unary and about 36 in binary","About 36 in unary and about 1800 in binary","About 1800 either way, since the numbers are the same","None of these"], a: 1,
+      x: "Unary works through every pair of 1s: 50 × 36 = 1800. In binary, 50 = 110010 and 36 = 100100 are 6 bits each, so about 6 × 6 = 36. Same numbers, very different cost." },
+    { id: 'v12-02', src: 'lecture', exv: 1, t: 6, s: 'Efficiency', q: 'Why does the professor warn against writing Turing machine programs only in unary?',
+      c: ["Unary cannot represent the number zero on a tape","A tape cell cannot hold a whole run of 1s at once","Its step count is exponential in the input size","Unary numbers would not fit on the infinite tape","None of these"], a: 2,
+      x: "A number n takes n cells in unary but only about lg n bits in binary, so a unary program’s running time is exponential in the size of the binary input. In his words: “It is also necessary to write an efficient working program.”" },
+    { id: 'v12-03', src: 'lecture', exv: 1, t: 6, s: 'Efficiency', q: 'What is 50 in binary, as the professor works it out?',
+      c: ["110100","101100","100110","110010","None of these"], a: 3,
+      x: "50 = 32 + 16 + 2 = 110010. He gets there as 25 × 2: 25 = 11001, then append a 0. Likewise 36 = 9 × 4 = 1001 followed by 00 = 100100." },
+    { id: 'v12-04', src: 'lecture', exv: 1, t: 6, s: 'Efficiency', q: 'Working bit by bit on binary inputs n and m, a multiplying TM takes about how many steps, by the professor’s estimate?',
+      c: ["O(lg n · lg m)","O(n · m)","O(n · lg m)","O(n + m)","None of these"], a: 0,
+      x: "Binary inputs have about lg n and lg m bits, so pairing up bits costs about lg n · lg m (his 6 × 6 = 36). O(n · m) is the unary cost (50 × 36 = 1800)." },
+    { id: 'v12-05', src: 'lecture', exv: 1, t: 6, s: 'Definition', q: 'When the blank symbol is listed separately, a Turing machine is written as the 7-tuple',
+      c: ["(Q, Σ, δ, q₀, B, F, L)","(Q, Γ, B, Σ, δ, q₀, F)","(Q, Γ, Σ, δ, q₀, q_f, F)","(Γ, B, Σ, δ, q₀, F, R)","None of these"], a: 1,
+      x: "States Q, tape symbols Γ, the blank B (written # on that slide), input symbols Σ, transition function δ, start state q₀ and final states F. Without B listed it is the 6-tuple (Q, Σ, Γ, δ, q₀, F)." },
+    { id: 'v12-06', src: 'lecture', exv: 1, t: 6, s: 'The tape', q: 'True or false: in this course, a Turing machine’s tape is infinite in both directions, and each cell holds one symbol at a time.',
+      c: ["True","False"], a: 0,
+      x: "From the video: “The tape is of infinite length, both left and right,” and a cell can hold any symbol of Γ, but only one at a time. A semi-infinite tape (Lecture 13) is a restriction with the same power." },
+    { id: 'v12-07', src: 'lecture', exv: 1, t: 6, s: 'Halting position', q: 'When a function-computing TM halts, where does the professor want the tape head?',
+      c: ["On the blank just after the result","On the 0 delimiter after the result","Anywhere, as long as it halts in q_f","On the leftmost symbol of the result","None of these"], a: 3,
+      x: "The final configuration is q_f with the head on the leftmost symbol of f(w). He asks for this explicitly (“it just makes it neat”): after 2 + 2 the head should sit on the first 1 of 11110." },
+    { id: 'v12-08', src: 'lecture', exv: 1, t: 6, s: 'Notation', q: 'In q₀ w ⊢* q_f f(w), the symbol ⊢* means',
+      c: ["exactly one computation step","zero or more computation steps","one or more grammar derivations","the machine never halts","None of these"], a: 1,
+      x: "⊢ is one move between configurations and ⊢* is zero or more moves, just as ⇒* is zero or more derivation steps for grammars." },
+    { id: 'v12-09', src: 'lecture', exv: 1, g: 'g-enc12', t: 6, s: 'Tracing', q: 'What is on the tape when this machine halts on 0110?',
+      c: ["0##0#11","0110#11","00#11","##00#11","None of these"], a: 0,
+      x: "It is the a/b example with a → 0 and b → 1: each 1 is marked x, a 1 is written after the separator, and the x becomes a blank. The 0s stay put, so 0110 becomes 0##0#11 (checked by simulation; it halts in F). The professor describes it as counting the ones." },
+    { id: 'v12-10', src: 'lecture', exv: 1, g: 'g-enc12', t: 6, s: 'Encoding', q: 'Which 5-tuple encodes the move from A on reading 1?',
+      c: ["(A, x, 1, B, R)","(A, 1, B, x, R)","(A, 1, x, B, R)","(B, 1, x, A, R)","None of these"], a: 2,
+      x: "The order is (current state, symbol read, symbol written, next state, move): in A reading 1, write x, go to B, move right." },
+    { id: 'v12-11', src: 'lecture', exv: 1, t: 6, s: 'Adder', q: 'The addition machine leaves (x + y)0 on the tape. Why keep the trailing 0?',
+      c: ["The machine cannot erase a 0 once written","So the result can feed another operation","It records that x was larger than y","The machine needs it to halt in q_f","None of these"], a: 1,
+      x: "The 0 is the delimiter. The notes say it “can subsequently be used when the result participates in other operations,” like the Comparer → Adder chain." },
+    { id: 'v12-12', src: 'lecture', exv: 1, t: 6, s: 'Combining machines', q: 'Building f(x, y) from a Comparer, an Adder and an Eraser is an example of',
+      c: ["diagonalization","left factoring","reduction to PCP","divide and conquer","None of these"], a: 3,
+      x: "The professor’s handwritten note on that slide is “Divide & Conquer”: split a complex machine into submachines and let the Comparer decide which one runs." },
+    { id: 'v12-13', src: 'lecture', exv: 1, t: 6, s: 'Turing’s thesis', q: 'Which statement is Turing’s thesis (the Church–Turing thesis)?',
+      c: ["Anything effectively calculable is TM-computable","Every Turing machine halts on every possible input","Every language is accepted by at least one TM","Turing machines run faster than any real computer","None of these"], a: 0,
+      x: "Turing machines are taken as the formal model of effective computation. The other statements are false: TMs can loop, L_d is not accepted by any TM, and speed is not the point." },
+    { id: 'v12-14', src: 'lecture', exv: 1, t: 6, s: 'One move', q: 'True or false: in one move, a Turing machine’s head may stay in the same cell instead of moving.',
+      c: ["True","False"], a: 1,
+      x: "In this course δ maps to Q × Γ × {L, R}: every move goes one cell left or right. The professor mentions a stay option exists in some variants, but “normally it doesn’t”; answer from the definition." }
   ];
 
   Q.forEach(function (q) { q.fmt = 'prof'; q.keep = true; });

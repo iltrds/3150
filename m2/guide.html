@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261110b">
+<link rel="stylesheet" href="../assets/style.css?v=20261110c">
 <style>
   .diagram svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 1.2em 0 .6em; }
   .diagram .st { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.4; }
@@ -401,6 +401,16 @@ X ::= a  |  b Y e</pre>
     <li>The palindrome detector erases the first symbol, remembers it in the state (B for 1, C for 0), checks the last symbol (D, E), returns (F) and repeats. It accepts 1001 and 101 and rejects 0100 and 10.</li>
   </ul>
 </div>
+<h3 id="t6-video">What the professor stressed in the video lecture</h3>
+<ul>
+  <li><b>Efficiency counts.</b> “In my class it is not sufficient to write a working program. It is also necessary to write an efficient working program.” For 50 × 36, unary takes about 50 × 36 = 1800 transitions; in binary, 50 = 110010 and 36 = 100100 are 6 bits each, so about 6 × 6 = 36. Unary is easier to program but exponential in the input size. Think O(n·m) versus O(lg n · lg m).</li>
+  <li><b>The tape</b> is infinite in both directions; each cell holds one symbol at a time.</li>
+  <li><b>The 7-tuple</b> (Q, Γ, B, Σ, δ, q₀, F) lists the blank B separately.</li>
+  <li><b>Finish with the head on the first symbol of the result</b>, in the final state: q₀ w ⊢* q_f f(w), where ⊢* is zero or more moves. After 2 + 2 the head sits on the first 1 of 11110.</li>
+  <li><b>The baabab machine</b> “counts the b’s”: each b is blanked and copied past the separator, giving #aa#a##bbb (his board shows _aa__#bbb). The Encoding slide is the same machine with a → 0 and b → 1, so 0110 becomes 0##0#11.</li>
+  <li><b>Combining machines is divide and conquer</b>; the adder’s trailing 0 lets its result feed the next machine.</li>
+  <li><b>Turing’s thesis:</b> every effectively calculable function is computable by a Turing machine.</li>
+</ul>
 <p class="practice-link"><a href="quiz.html?topic=6">Quiz Topic 6</a> or <a href="cards.html?topic=6">drill its flashcards</a>.</p>
 
 <!-- ======================= TOPIC 7 ======================= -->
@@ -489,6 +499,7 @@ X ::= a  |  b Y e</pre>
     <tr><td>Blank / double cell</td><td>Blank = syntax error; two rules in a cell = not LL(1)</td></tr>
     <tr><td>TM δ</td><td>Q × Γ → Q × Γ × {L, R}; a/b,R = read a, write b, move right</td></tr>
     <tr><td>TM accepts</td><td>Halts in a final state; a rejected input may loop forever</td></tr>
+    <tr><td>Unary vs binary</td><td>50 × 36: about 1800 steps in unary vs 36 in binary; efficiency is marked</td></tr>
     <tr><td>RE vs recursive</td><td>RE: accepted, may loop on non-members. Recursive: halts on every input</td></tr>
     <tr><td>L_d</td><td>{ k | T_k does not accept k }: not RE, by diagonalization</td></tr>
     <tr><td>TM encoding</td><td>110 , / 1110 R / 11110 L / 111110 → / 10 is 1 / 0 is 0; states in binary</td></tr>
@@ -507,10 +518,10 @@ X ::= a  |  b Y e</pre>
   </div>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261110b"></script>
-<script src="../assets/ptree.js?v=20261110b"></script>
-<script src="../assets/m2/llviz.js?v=20261110b"></script>
-<script src="../assets/app.js?v=20261110b"></script>
+<script src="../assets/m2/questions.js?v=20261110c"></script>
+<script src="../assets/ptree.js?v=20261110c"></script>
+<script src="../assets/m2/llviz.js?v=20261110c"></script>
+<script src="../assets/app.js?v=20261110c"></script>
 <script>
 (function () {
   document.getElementById('tree-xyz').innerHTML =

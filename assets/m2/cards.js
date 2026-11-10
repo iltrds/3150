@@ -111,5 +111,13 @@ window.CARDS = [
   { t: 8, f: 'Is PCP decidable?', b: 'No. There is no algorithm that decides for every instance whether a solution exists (shown by reducing the Halting Problem to PCP). Checking a given sequence is easy.' },
   { t: 8, f: 'MPCP', b: 'Modified PCP: the solution must start with the first pair, w₁w_{i₁}…w_{i_m} = x₁x_{i₁}…x_{i_m}.' },
   { t: 8, f: 'G_u and G_v from a PCP instance', b: 'S → uᵢ S i | uᵢ i (and S′ → vᵢ S′ i | vᵢ i). The index trail records which dominoes were used, so a common string is exactly a PCP solution.' },
-  { t: 8, f: 'What PCP proves about CFGs', b: 'Undecidable: whether two CFGs have disjoint languages, and whether a CFG is ambiguous (S_new → S_u | S_v is ambiguous iff the instance has a solution).' }
+  { t: 8, f: 'What PCP proves about CFGs', b: 'Undecidable: whether two CFGs have disjoint languages, and whether a CFG is ambiguous (S_new → S_u | S_v is ambiguous iff the instance has a solution).' },
+
+  /* Lecture 12 video: points stressed in the narration */
+  { t: 6, f: 'Unary vs binary cost (video lecture)', b: '50 × 36 in unary takes about 1800 transitions; in binary (110010 × 100100, 6 bits each) about 36. Unary is easy to program but exponential in the input size. The professor wants efficient programs, not just working ones.' },
+  { t: 6, f: 'The 7-tuple form', b: '(Q, Γ, B, Σ, δ, q₀, F): the blank B is listed separately. Otherwise the 6-tuple (Q, Σ, Γ, δ, q₀, F).' },
+  { t: 6, f: 'The tape (video lecture)', b: 'Infinite in both directions; each cell holds one symbol of Γ at a time; used for input, storage and output.' },
+  { t: 6, f: 'Where the head should finish', b: 'On the leftmost symbol of the result, in the final state: q₀ w ⊢* q_f f(w). ⊢* means zero or more moves.' },
+  { t: 6, f: 'Turing’s thesis', b: 'Every effectively calculable function is computable by a Turing machine (the Church–Turing thesis).' },
+  { t: 6, f: 'Combining machines', b: 'Divide and conquer: a Comparer decides whether the Adder or the Eraser runs. The adder’s trailing 0 lets its result feed the next machine.' }
 ];
