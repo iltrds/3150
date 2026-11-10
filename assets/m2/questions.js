@@ -20,8 +20,9 @@
     7: { name: 'Decidability, enumerability and RE languages', short: 'Decidability', sections: 'Sipser 4.2, Lectures 13–14' },
     8: { name: 'Post Correspondence Problem', short: 'PCP', sections: 'Lecture 14' }
   };
-  // Practice exam: same length and pace as Midterm 1 until the Midterm 2 announcement says otherwise.
-  window.EXAM_CONFIG = { n: 29, mix: { 1: 4, 2: 3, 3: 4, 4: 4, 5: 3, 6: 4, 7: 4, 8: 3 } };
+  // Practice exam in the announced format: 32 MCQs (36 marks) in 75 minutes, Thu Nov 12, 2026, 10 a.m.
+  window.EXAM_CONFIG = { n: 32, mix: { 1: 5, 2: 3, 3: 4, 4: 5, 5: 3, 6: 5, 7: 4, 8: 3 },
+    modes: { real: { label: 'Real (75 min)', min: 75 }, tight: { label: 'Tight (60 min)', min: 60 } } };
 
   var LLT = tbl(['', 'id', '+', '*', '(', ')', '$'], [
     ['E', 'E → TE′', '', '', 'E → TE′', '', ''],

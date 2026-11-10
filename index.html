@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
 <title>CIS*3150 study site</title>
 <meta name="description" content="Unofficial study site for CIS*3150 Theory of Computation: Midterm 1 review (guide, flashcards, quizzes, the practice test and real midterm questions) and Midterm 2, in progress.">
-<link rel="stylesheet" href="assets/style.css?v=20261110e">
+<link rel="stylesheet" href="assets/style.css?v=20261110f">
 </head>
 <body>
 <header id="site-head"></header>
@@ -34,7 +34,7 @@
       <span class="bubble" aria-hidden="true">2</span>
       <div>
         <h3><a href="m2/index.html">Midterm 2</a></h3>
-        <p><b>Thursday, November 12, 2026</b> · <span id="m2-countdown"></span>. Grammars and ambiguity; Chomsky normal form; pushdown automata; LL(1) parsing and parsing tables; Turing machines; decidability and enumerability; the Post Correspondence Problem.</p>
+        <p><b>Thursday, November 12, 2026, 10 a.m.</b> · <span id="m2-countdown"></span>. 32 MCQs (36 marks), 75 minutes. Grammars and ambiguity; Chomsky normal form; pushdown automata; LL(1) parsing and parsing tables; Turing machines; decidability and enumerability; the Post Correspondence Problem.</p>
         <p class="unit-links"><a href="m2/guide.html">Study guide</a><a href="m2/cards.html">Flashcards</a><a href="m2/quiz.html">Quizzes</a><a href="m2/exam.html">Practice exam</a></p>
       </div>
       <p class="unit-meta" id="m2-meta"></p>
@@ -42,14 +42,14 @@
   </ol>
 </main>
 <footer id="site-foot"></footer>
-<script src="assets/m1/questions.js?v=20261110e"></script>
-<script src="assets/m1/questions-prof.js?v=20261110e"></script>
-<script src="assets/m1/midterm.js?v=20261110e"></script>
-<script src="assets/m1/cards.js?v=20261110e"></script>
+<script src="assets/m1/questions.js?v=20261110f"></script>
+<script src="assets/m1/questions-prof.js?v=20261110f"></script>
+<script src="assets/m1/midterm.js?v=20261110f"></script>
+<script src="assets/m1/cards.js?v=20261110f"></script>
 <script>window.M1_COUNTS = { q: QB.length, c: CARDS.length };</script>
-<script src="assets/m2/questions.js?v=20261110e"></script>
-<script src="assets/m2/cards.js?v=20261110e"></script>
-<script src="assets/app.js?v=20261110e"></script>
+<script src="assets/m2/questions.js?v=20261110f"></script>
+<script src="assets/m2/cards.js?v=20261110f"></script>
+<script src="assets/app.js?v=20261110f"></script>
 <script>
 (function () {
   var hist = App.storeFor('m1').get('history', []);
@@ -65,7 +65,7 @@
     meta2 += '<br>' + h2.length + ' practice exam' + (h2.length > 1 ? 's' : '') + ' taken, best ' + b2.score + '/' + b2.total;
   }
   document.getElementById('m2-meta').innerHTML = meta2;
-  document.getElementById('m2-countdown').innerHTML = App.countdownText(new Date(2026, 10, 12), 'Midterm 2');
+  document.getElementById('m2-countdown').innerHTML = App.countdownText(new Date(2026, 10, 12, 10), 'Midterm 2');
 })();
 </script>
 </body>

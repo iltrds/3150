@@ -56,7 +56,7 @@ Choices were balanced so the correct answer is not given away by length: it is t
 - **Study guide** (`m2/guide.html`): CFG design and ambiguity (Sipser 2.3, G₁–G₄, dangling else), nullable variables, ε-rule removal and Chomsky normal form, pushdown automata (M₁ for 0ⁿ1ⁿ, instantaneous descriptions, DPDAs), and predictive parsing (left recursion, left factoring, FIRST/FOLLOW, the LL(1) table and a full parse trace). Two step-through animations (`assets/m2/llviz.js`): the predictive parser on preset or typed input, and the table being filled production by production. Both compute FIRST, FOLLOW and the table themselves.
 - **Flashcards** (`m2/cards.html`): 46 cards.
 - **Topic quizzes** (`m2/quiz.html`): 77 five-choice questions with shared setups; answers checked by computation (FIRST/FOLLOW and LL(1) tables, nullable sets, parse-tree counts, PDA runs). Correct answers are spread evenly over (a)–(e) and are uniquely the longest choice in only 15% of questions.
-- **Practice exam** (`m2/exam.html`): 29 questions (4 / 3 / 4 / 4 / 3 / 4 / 4 / 3 across the eight topics), in Midterm 1's format until the Midterm 2 announcement. Change `EXAM_CONFIG` in `assets/m2/questions.js` to adjust.
+- **Practice exam** (`m2/exam.html`): 32 questions (5 / 3 / 4 / 5 / 3 / 5 / 4 / 3 across the eight topics) in 75 minutes, the announced format (Thu Nov 12, 2026, 10 a.m., 36 marks, no partial marks). Units can override the real and tight timings with `EXAM_CONFIG.modes`. Change `EXAM_CONFIG` in `assets/m2/questions.js` to adjust.
 
 ## Cache busting
 

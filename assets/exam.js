@@ -9,6 +9,8 @@
     real: { label: 'Real (80 min)', min: 80 },
     tight: { label: 'Tight (65 min)', min: 65 }
   };
+  // A unit can override the real and tight timings (Midterm 2: 32 questions in 75 minutes).
+  if (CFG.modes) Object.keys(CFG.modes).forEach(function (k) { MODES[k] = CFG.modes[k]; });
   var params = new URLSearchParams(location.search);
   var mode = MODES[params.get('mode')] ? params.get('mode') : 'tight';
   var S = null, timer = null, lastTick = 0;
@@ -267,7 +269,7 @@
       h += '<li><span>Q' + qnum(R, i) + ' <span class="muted">' + TOPICS[q.t].short + ', ' + q.s + '</span></span><span><span class="time-pill' + (R.times[i] > target * 1.5 ? ' slow' : '') + '">' + App.fmtTime(R.times[i]) + '</span> ' + (ok ? '<b style="color:var(--form)">right</b>' : '<b style="color:var(--red)">wrong</b>') + '</span></li>';
     });
     h += '</ul></div></div>';
-    h += '<div class="btn-row" style="margin:28px 0 0"><button class="btn" id="again" type="button">' + (isPT ? 'Take a full 29-question exam' : 'New practice exam') + '</button><a class="btn secondary" href="quiz.html?style=prof">Quiz in the test style</a></div>';
+    h += '<div class="btn-row" style="margin:28px 0 0"><button class="btn" id="again" type="button">' + (isPT ? 'Take a full ' + N + '-question exam' : 'New practice exam') + '</button><a class="btn secondary" href="quiz.html?style=prof">Quiz in the test style</a></div>';
     h += '<div class="filters"><div class="seg" id="filter" role="group" aria-label="Filter review"><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="wrong" aria-pressed="false">Wrong or blank</button><button type="button" data-f="flag" aria-pressed="false">Flagged</button></div></div>';
     h += '<ul class="review-list" id="review"></ul>';
     sec.innerHTML = h;
