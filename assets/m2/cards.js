@@ -85,7 +85,7 @@ window.CARDS = [
   /* Lecture 13 additions to Topic 6 */
   { t: 6, f: 'One TM move (class exercise Nov 10)', b: 'In one move a Turing machine writes a symbol on the scanned cell, moves the head one cell left or right, and may change state: all of these.' },
   { t: 6, f: 'TM power (class exercise Nov 10)', b: 'A Turing machine is more powerful than both finite automata and PDAs: it can simulate either, and recognizes languages like {aⁿbⁿcⁿ} that neither can.' },
-  { t: 6, f: 'The 1ˣ#1ʸ## machine (states A–J, Z or q₀–q₉)', b: 'Multiplication: for each 1 of x (marked a), copy y to the end. On 2 and 3 it halts with 11#111#111111; the result block is 111111 = 6.' },
+  { t: 6, f: 'The 1ˣ#1ʸ## machine (states A–J, Z or q₀–q₉)', b: 'Multiplication: for each 1 of x (marked a), copy y to the end. It never writes a blank, so on 2 and 3 the whole tape is 11#111#111111 (result block 111111 = 6). In the class exercise that makes the answer None of these.' },
   { t: 6, f: 'TM that adds one to a binary number', b: 'Go to the right end; moving left, turn 1s into 0s until a 0 or blank, which becomes 1. 1011 → 1100, 111 → 1000.' },
 
   /* Topic 7: Recursive and RE languages (Lecture 13) */
