@@ -4,7 +4,7 @@ A static study site for CIS*3150 Theory of Computation (Fall 2026), organized by
 
 - `index.html`: course home listing each unit.
 - `m1/`: **Midterm 1** (written Thursday, October 8, 2026), kept for final exam review.
-- `m2/`: **Midterm 2**, built lecture by lecture (currently Lectures 6, 7, 9 and 12).
+- `m2/`: **Midterm 2**, built lecture by lecture (currently Lectures 6, 7, 9, 12, 13 and 14).
 
 The old root URLs (`guide.html`, `quiz.html`, …) redirect to `m1/`.
 
@@ -56,7 +56,7 @@ Choices were balanced so the correct answer is not given away by length: it is t
 - **Study guide** (`m2/guide.html`): CFG design and ambiguity (Sipser 2.3, G₁–G₄, dangling else), nullable variables, ε-rule removal and Chomsky normal form, pushdown automata (M₁ for 0ⁿ1ⁿ, instantaneous descriptions, DPDAs), and predictive parsing (left recursion, left factoring, FIRST/FOLLOW, the LL(1) table and a full parse trace). Two step-through animations (`assets/m2/llviz.js`): the predictive parser on preset or typed input, and the table being filled production by production. Both compute FIRST, FOLLOW and the table themselves.
 - **Flashcards** (`m2/cards.html`): 46 cards.
 - **Topic quizzes** (`m2/quiz.html`): 77 five-choice questions with shared setups; answers checked by computation (FIRST/FOLLOW and LL(1) tables, nullable sets, parse-tree counts, PDA runs). Correct answers are spread evenly over (a)–(e) and are uniquely the longest choice in only 15% of questions.
-- **Practice exam** (`m2/exam.html`): 29 questions (6 / 4 / 5 / 5 / 4 / 5 across the six topics), in Midterm 1's format until the Midterm 2 announcement. Change `EXAM_CONFIG` in `assets/m2/questions.js` to adjust.
+- **Practice exam** (`m2/exam.html`): 29 questions (4 / 3 / 4 / 4 / 3 / 4 / 4 / 3 across the eight topics), in Midterm 1's format until the Midterm 2 announcement. Change `EXAM_CONFIG` in `assets/m2/questions.js` to adjust.
 
 ## Cache busting
 
@@ -64,4 +64,4 @@ Pages link assets with a version tag (`style.css?v=…`) so browsers fetch fresh
 
 ## Adding to Midterm 2
 
-Midterm 2 data lives in `assets/m2/` (`questions.js` also sets `TOPICS`, `GROUPS` and `EXAM_CONFIG`; `cards.js`). Add new lectures' questions there and new sections to `m2/guide.html`. Questions from the Oct 27 class exercise carry `ex: <question number>` (shown with a “Class exercise” tag); variants written in the same style carry `exv: 1`. Both appear in random exams and in the quiz's class-exercise filter (`quiz.html?source=exercise`). The exercise's regex question (`ex-1`) and its variants are in `assets/m1/questions-prof.js`. Choices may number 2 to 6; a sixth choice is F on screen and key 6. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).
+Midterm 2 data lives in `assets/m2/` (`questions.js` also sets `TOPICS`, `GROUPS` and `EXAM_CONFIG`; `cards.js`). Add new lectures' questions there and new sections to `m2/guide.html`. Questions from the class exercises carry `ex: <question number>` (or `true` when the number is unknown) and `exd` for the date (default Oct 27) (shown with a “Class exercise” tag); variants written in the same style carry `exv: 1`. Both appear in random exams and in the quiz's class-exercise filter (`quiz.html?source=exercise`). The exercise's regex question (`ex-1`) and its variants are in `assets/m1/questions-prof.js`. Choices may number 2 to 6; a sixth choice is F on screen and key 6. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).

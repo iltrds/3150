@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=20261103a">
+<link rel="stylesheet" href="../assets/style.css?v=20261110a">
 <style>
   .diagram svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 1.2em 0 .6em; }
   .diagram .st { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.4; }
@@ -24,7 +24,7 @@
 <header id="site-head"></header>
 <main class="wrap">
   <h1 style="font-size:clamp(32px,4.6vw,48px)">Midterm 2 study guide</h1>
-  <p class="lede" style="margin-bottom:36px">Lectures 6, 7, 9 and 12 so far: designing grammars and ambiguity, simplifying grammars and Chomsky normal form, pushdown automata, predictive (LL(1)) parsing and parsing tables, and Turing machines. New lectures will be added as they come.</p>
+  <p class="lede" style="margin-bottom:36px">Lectures 6, 7, 9, 12, 13 and 14 so far: designing grammars and ambiguity, simplifying grammars and Chomsky normal form, pushdown automata, predictive (LL(1)) parsing and parsing tables, Turing machines, recursive and RE languages, and the Post Correspondence Problem. New lectures will be added as they come.</p>
 
   <div class="guide-layout">
     <nav class="toc" aria-label="Contents">
@@ -44,7 +44,9 @@
     <tr><td>3</td><td><a href="#t3">Pushdown automata</a></td><td>L07 PDAs</td><td>Sipser 2.2</td></tr>
     <tr><td>4</td><td><a href="#t4">Predictive parsing</a></td><td>L07 Predictive parsers</td><td>Aho, Sethi &amp; Ullman 2.4 and pp. 176–190</td></tr>
     <tr><td>5</td><td><a href="#t5">Building parsing tables</a></td><td>L09 Parsing tables</td><td>Appel 3.2 (nullable, FIRST, FOLLOW)</td></tr>
-    <tr><td>6</td><td><a href="#t6">Turing machines</a></td><td>L12 Turing machines</td><td>Sipser 3.1</td></tr>
+    <tr><td>6</td><td><a href="#t6">Turing machines</a></td><td>L12 Turing machines, L13</td><td>Sipser 3.1</td></tr>
+    <tr><td>7</td><td><a href="#t7">Recursive and RE languages</a></td><td>L13 Enumerability</td><td>Sipser 3.3, 4.2</td></tr>
+    <tr><td>8</td><td><a href="#t8">Post Correspondence Problem</a></td><td>L14 PCP</td><td>Sipser 5.2</td></tr>
   </tbody>
 </table>
 </div>
@@ -82,6 +84,30 @@
   </ul>
 </div>
 <p class="practice-link"><a href="quiz.html?source=exercise">Quiz the class-exercise questions and variants</a>. The Midterm 1 regex question is in the <a href="../m1/quiz.html?topic=3">Midterm 1 Topic 3 quiz</a>.</p>
+
+<h2 id="exercise-nov10">What the Nov 10 class exercise asked</h2>
+<p>Four questions, all on Turing machines. Two are one-line facts; the other two need you to work something out.</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Asked</th><th>What it tests</th><th>Format</th></tr></thead>
+  <tbody>
+    <tr><td>Bits for δ(q₃, 1) → (q₁, 1, L)</td><td>The Lecture 13 encoding: binary state numbers, then each digit encoded</td><td>5 choices</td></tr>
+    <tr><td>In one move the TM …</td><td>A move writes, moves the head and may change state</td><td>4 choices, “All of these”</td></tr>
+    <tr><td>Tape after the 1ˣ#1ʸ## machine runs on 2 and 3</td><td>Tracing a multi-state machine and recognizing what it computes</td><td>7 choices</td></tr>
+    <tr><td>A TM is more powerful than …</td><td>TM vs finite automata and PDAs</td><td>4 choices, “Both (a) and (b)”</td></tr>
+  </tbody>
+</table>
+</div>
+<details>
+  <summary>Answers and why</summary>
+  <ul>
+    <li><b>Encoding:</b> <code>1010 110 10 111110 10 110 10 110 11110</code> (q₃ = 11₂ → 10 10; symbol 1 → 10; q₁ → 10; L → 11110).</li>
+    <li><b>One move:</b> all of these.</li>
+    <li><b>The machine multiplies.</b> On 11#111## it halts with 11#111#111111: x and y stay, and the result block is <b>111111</b> (2 × 3). 11 111 11111 is the 2 + 3 trap.</li>
+    <li><b>More powerful than:</b> both finite automata and PDAs.</li>
+  </ul>
+</details>
+<p class="practice-link"><a href="quiz.html?source=exercise">Quiz the class-exercise questions and variants</a>.</p>
 
 <!-- ======================= TOPIC 1 ======================= -->
 <h2 id="t1">Topic 1: Designing grammars and ambiguity</h2>
@@ -377,6 +403,70 @@ X ::= a  |  b Y e</pre>
 </div>
 <p class="practice-link"><a href="quiz.html?topic=6">Quiz Topic 6</a> or <a href="cards.html?topic=6">drill its flashcards</a>.</p>
 
+<!-- ======================= TOPIC 7 ======================= -->
+<h2 id="t7">Topic 7: Recursive and RE languages, and encoding TMs (Lecture 13)</h2>
+<p>Lecture 13 opens with more machines to build (a palindrome detector, adding one to a binary number, the 1ˣ#1ʸ## multiplier) and then asks which languages a Turing machine can accept at all.</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Class</th><th>Definition</th></tr></thead>
+  <tbody>
+    <tr><td>Recursively enumerable (RE)</td><td>Some TM accepts L: on w ∈ L it halts in an accepting state; on w ∉ L it halts in a non-accepting state <b>or never halts</b>.</td></tr>
+    <tr><td>Recursive</td><td>Some TM recognizes L and <b>halts on every input</b>. Every recursive language is RE.</td></tr>
+    <tr><td>Non-RE</td><td>No TM accepts it: a problem no computer can solve.</td></tr>
+  </tbody>
+</table>
+</div>
+<ul>
+  <li><b>Same power as a basic TM:</b> nondeterministic and multi-tape TMs (extensions); semi-infinite tapes, PDAs with two stacks and counter machines (restrictions). A PDA with one stack is weaker.</li>
+  <li><b>Counter machines</b> store a stack as one base-5 integer (Z = 1, A = 2, B = 3, C = 4, top = last digit). Z, A, C, B from bottom to top is 3 + 4·5 + 2·5² + 1·5³ = 198. Push(y): x = 5x + y. The top is x mod 5; popping leaves x div 5. (The slide writes Pop as x mod 5.)</li>
+  <li><b>TMs and computers:</b> each can simulate the other, the TM with at most a polynomial slowdown.</li>
+</ul>
+<h3 id="t7-enc">Encoding a TM as a binary number</h3>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Symbol</th><th>,</th><th>R</th><th>L</th><th>→</th><th>digit 1</th><th>digit 0</th></tr></thead>
+  <tbody><tr><td>Code</td><td>110</td><td>1110</td><td>11110</td><td>111110</td><td>10</td><td>0</td></tr></tbody>
+</table>
+</div>
+<p>Write each state number in binary, then encode digit by digit. δ(q, s) → (p, t, D) becomes q , s → p , t , D:</p>
+<ul>
+  <li>δ(q₂, 1) → (q₃, 0, R): <code>100 110 10 111110 1010 110 0 110 1110</code> (q₂ = 10₂, q₃ = 11₂).</li>
+  <li>δ(q₃, 1) → (q₁, 1, L), from the Nov 10 exercise: <code>1010 110 10 111110 10 110 10 110 11110</code>.</li>
+</ul>
+<h3 id="t7-diag">A non-RE language: L_d</h3>
+<p>With an encoding, every TM is some T_k, so they can be listed T₁, T₂, …; invalid encodings count as a machine that accepts nothing. Define <b>L_d = { k | T_k does not accept input k }</b>. If some T_i accepted L_d, feed it i: if T_i accepts i then i ∉ L_d, so it should not; if it does not accept i then i ∈ L_d, so it should. Both contradict, so <b>L_d is not RE</b>. This is <b>diagonalization</b>: complementing the diagonal of the “T_k on input k” table builds a row that differs from every machine’s row.</p>
+<p class="practice-link"><a href="quiz.html?topic=7">Quiz Topic 7</a> or <a href="cards.html?topic=7">drill its flashcards</a>.</p>
+
+<!-- ======================= TOPIC 8 ======================= -->
+<h2 id="t8">Topic 8: The Post Correspondence Problem (Lecture 14)</h2>
+<p>Given dominoes, each with a top string and a bottom string, is there a sequence of one or more of them (repeats allowed) whose tops spell the same string as their bottoms? Formally, lists A = w₁, …, w_k and B = x₁, …, x_k and indices i₁, …, i_m with w_{i₁}…w_{i_m} = x_{i₁}…x_{i_m}.</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Instance (top / bottom)</th><th>Answer</th></tr></thead>
+  <tbody>
+    <tr><td>a/ac, c/ba, ba/a, acb/b</td><td>1, 2, 3, 1, 4 → acbaaacb</td></tr>
+    <tr><td>011/10111, 111/11</td><td>2, 1, 2 → 111011111</td></tr>
+    <tr><td>1/111, 10111/10, 10/0</td><td>2, 1, 1, 3 → 101111110</td></tr>
+    <tr><td>10/101, 011/11, 101/011 (class discussion)</td><td>No solution</td></tr>
+    <tr><td>01/010, 110/00, 010/101</td><td>No solution</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="callout"><span class="label">Solving one by hand</span>
+  <ul>
+    <li><b>Start:</b> the first domino’s top and bottom must agree as far as the shorter goes. Often only one domino can start.</li>
+    <li><b>Track the overhang:</b> after each domino, note which row is ahead and by what. The next domino must continue it.</li>
+    <li><b>Spot a loop:</b> if the same overhang comes back with the same forced choice (as in the class discussion, where domino 3 keeps the bottom one symbol ahead), there is no solution.</li>
+  </ul>
+</div>
+<ul>
+  <li><b>PCP is undecidable:</b> no algorithm answers every instance (shown by reducing the Halting Problem to PCP). Single instances can still be solved, and a proposed sequence is easy to check.</li>
+  <li><b>MPCP</b> requires the solution to start with the first pair.</li>
+  <li><b>PCP and CFGs:</b> G_u has S → uᵢ S i | uᵢ i, and G_v the same with vᵢ. The index trail records the dominoes used, so G_u and G_v share a string exactly when the instance has a solution (for 011/10111, 111/11: 111011111212).</li>
+  <li><b>Consequences:</b> it is undecidable whether two CFGs have disjoint languages, and whether a CFG is ambiguous (S_new → S_u | S_v is ambiguous exactly when the instance has a solution).</li>
+</ul>
+<p class="practice-link"><a href="quiz.html?topic=8">Quiz Topic 8</a> or <a href="cards.html?topic=8">drill its flashcards</a>.</p>
+
 <!-- ======================= CHEAT SHEET ======================= -->
 <h2 id="cheat">Cheat sheet and traps</h2>
 <table>
@@ -399,6 +489,10 @@ X ::= a  |  b Y e</pre>
     <tr><td>Blank / double cell</td><td>Blank = syntax error; two rules in a cell = not LL(1)</td></tr>
     <tr><td>TM δ</td><td>Q × Γ → Q × Γ × {L, R}; a/b,R = read a, write b, move right</td></tr>
     <tr><td>TM accepts</td><td>Halts in a final state; a rejected input may loop forever</td></tr>
+    <tr><td>RE vs recursive</td><td>RE: accepted, may loop on non-members. Recursive: halts on every input</td></tr>
+    <tr><td>L_d</td><td>{ k | T_k does not accept k }: not RE, by diagonalization</td></tr>
+    <tr><td>TM encoding</td><td>110 , / 1110 R / 11110 L / 111110 → / 10 is 1 / 0 is 0; states in binary</td></tr>
+    <tr><td>PCP</td><td>Undecidable; repeats allowed; implies CFG disjointness and ambiguity are undecidable</td></tr>
   </tbody>
 </table>
 <ul>
@@ -413,10 +507,10 @@ X ::= a  |  b Y e</pre>
   </div>
 </main>
 <footer id="site-foot"></footer>
-<script src="../assets/m2/questions.js?v=20261103a"></script>
-<script src="../assets/ptree.js?v=20261103a"></script>
-<script src="../assets/m2/llviz.js?v=20261103a"></script>
-<script src="../assets/app.js?v=20261103a"></script>
+<script src="../assets/m2/questions.js?v=20261110a"></script>
+<script src="../assets/ptree.js?v=20261110a"></script>
+<script src="../assets/m2/llviz.js?v=20261110a"></script>
+<script src="../assets/app.js?v=20261110a"></script>
 <script>
 (function () {
   document.getElementById('tree-xyz').innerHTML =

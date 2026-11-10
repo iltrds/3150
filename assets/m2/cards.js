@@ -80,5 +80,36 @@ window.CARDS = [
   { t: 6, f: '5-tuple (A, 1, x, B, R)', b: 'In state A reading 1: write x, move right, go to state B. The palindrome detector is written this way.' },
   { t: 6, f: 'Palindrome detector idea', b: 'Erase the first symbol and remember it in the state (B for 1, C for 0); run to the end; erase a matching last symbol (D, E) or reject; return (F); repeat. An empty middle means accept.' },
   { t: 6, f: 'Combining machines', b: 'f(x, y) = x + y if x > y else 0: a Comparer routes x, y to an Adder or to an Eraser. f(5, 2) = 7, f(3, 3) = 0.' },
-  { t: 6, f: 'History in one line each', b: 'Hilbert: is there an algorithm for every proposition? Gödel 1931: incompleteness. Turing 1936: the Turing machine as a model of any possible computation.' }
+  { t: 6, f: 'History in one line each', b: 'Hilbert: is there an algorithm for every proposition? Gödel 1931: incompleteness. Turing 1936: the Turing machine as a model of any possible computation.' },
+
+  /* Lecture 13 additions to Topic 6 */
+  { t: 6, f: 'One TM move (class exercise Nov 10)', b: 'In one move a Turing machine writes a symbol on the scanned cell, moves the head one cell left or right, and may change state: all of these.' },
+  { t: 6, f: 'TM power (class exercise Nov 10)', b: 'A Turing machine is more powerful than both finite automata and PDAs: it can simulate either, and recognizes languages like {aⁿbⁿcⁿ} that neither can.' },
+  { t: 6, f: 'The 1ˣ#1ʸ## machine (states A–J, Z or q₀–q₉)', b: 'Multiplication: for each 1 of x (marked a), copy y to the end. On 2 and 3 it halts with 11#111#111111; the result block is 111111 = 6.' },
+  { t: 6, f: 'TM that adds one to a binary number', b: 'Go to the right end; moving left, turn 1s into 0s until a 0 or blank, which becomes 1. 1011 → 1100, 111 → 1000.' },
+
+  /* Topic 7: Recursive and RE languages (Lecture 13) */
+  { t: 7, f: 'Recursively enumerable (RE)', b: 'Accepted by some TM: on w ∈ L it halts in an accepting state; on w ∉ L it halts in a non-accepting state or never halts.' },
+  { t: 7, f: 'Recursive', b: 'Recognized by a TM that halts on every input: accept if w ∈ L, halt in a non-accepting state otherwise. Every recursive language is RE.' },
+  { t: 7, f: 'The three classes', b: 'Recursive ⊂ RE, and outside RE are the non-RE languages: problems no computer can solve, such as L_d.' },
+  { t: 7, f: 'Extensions and restrictions of TMs', b: 'Nondeterministic and multi-tape TMs (extensions), and semi-infinite tapes, two-stack PDAs and counter machines (restrictions), all have the same power as a basic TM.' },
+  { t: 7, f: 'Counter machine stack as an integer', b: 'Z = 1, A = 2, B = 3, C = 4 in base 5, top = last digit. Stack Z, A, C, B (bottom → top) is 3 + 4·5 + 2·25 + 1·125 = 198. Push(y): x = 5x + y; top = x mod 5; pop = x div 5.' },
+  { t: 7, f: 'TMs and computers', b: 'A computer can simulate a TM, and a TM can simulate a computer with at most a polynomial slowdown.' },
+  { t: 7, f: 'TM encoding symbols', b: '110 comma, 1110 R, 11110 L, 111110 arrow, 10 digit 1, 0 digit 0. State numbers are written in binary first.' },
+  { t: 7, f: 'Encode δ(q₂, 1) → (q₃, 0, R)', b: '100 110 10 111110 1010 110 0 110 1110 (q₂ = 10 → 10 0; q₃ = 11 → 10 10).' },
+  { t: 7, f: 'Encode δ(q₃, 1) → (q₁, 1, L) (class exercise Nov 10)', b: '1010 110 10 111110 10 110 10 110 11110.' },
+  { t: 7, f: 'Enumerating all TMs', b: 'Each TM gets a binary number k, giving T₁, T₂, …. Invalid encodings count as a TM with one non-accepting state and no moves (it accepts nothing).' },
+  { t: 7, f: 'L_d, the diagonalization language', b: 'L_d = { k | T_k does not accept input k }. If T_i accepted L_d, then T_i accepts i ⇔ i ∉ L_d ⇔ T_i does not accept i: a contradiction. So L_d is not RE.' },
+  { t: 7, f: 'Diagonalization', b: 'Complement the diagonal of the table (T_k on input k) to build a row that differs from every T_k in position k, so it is no machine’s row.' },
+
+  /* Topic 8: Post Correspondence Problem (Lecture 14) */
+  { t: 8, f: 'PCP', b: 'Given lists A = w₁…w_k and B = x₁…x_k, is there a sequence i₁, …, i_m (m ≥ 1, repeats allowed) with w_{i₁}…w_{i_m} = x_{i₁}…x_{i_m}? Dominoes: top = bottom.' },
+  { t: 8, f: 'Dominoes a/ac, c/ba, ba/a, acb/b', b: 'Solution 1, 2, 3, 1, 4 spells acbaaacb on both rows. It must start with domino 1, the only one whose top and bottom agree at the start.' },
+  { t: 8, f: 'Dominoes 011/10111, 111/11', b: 'Solution 2, 1, 2: 111011111 on both rows. The slides turn this into G_u and G_v.' },
+  { t: 8, f: 'A = 1, 10111, 10;  B = 111, 10, 0', b: 'Solution 2, 1, 1, 3: 101111110 on both rows.' },
+  { t: 8, f: 'A = 10, 011, 101;  B = 101, 11, 011 (class discussion)', b: 'No solution: only pair 1 can start, then only pair 3 fits, and it keeps the bottom one symbol ahead forever.' },
+  { t: 8, f: 'Is PCP decidable?', b: 'No. There is no algorithm that decides for every instance whether a solution exists (shown by reducing the Halting Problem to PCP). Checking a given sequence is easy.' },
+  { t: 8, f: 'MPCP', b: 'Modified PCP: the solution must start with the first pair, w₁w_{i₁}…w_{i_m} = x₁x_{i₁}…x_{i_m}.' },
+  { t: 8, f: 'G_u and G_v from a PCP instance', b: 'S → uᵢ S i | uᵢ i (and S′ → vᵢ S′ i | vᵢ i). The index trail records which dominoes were used, so a common string is exactly a PCP solution.' },
+  { t: 8, f: 'What PCP proves about CFGs', b: 'Undecidable: whether two CFGs have disjoint languages, and whether a CFG is ambiguous (S_new → S_u | S_v is ambiguous iff the instance has a solution).' }
 ];

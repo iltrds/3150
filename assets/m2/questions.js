@@ -1,4 +1,4 @@
-/* CIS*3150 Midterm 2 question bank (lectures 6, 7, 9 and 12: CFGs part 2, PDAs, predictive parsing, parsing tables, Turing machines).
+/* CIS*3150 Midterm 2 question bank (lectures 6, 7, 9, 12, 13 and 14: CFGs part 2, PDAs, predictive parsing, parsing tables, Turing machines, RE languages, PCP).
    Prof's format: five choices (a)–(e) in fixed order, shared setups (g), grammars shown as listings.
    Answers checked by computation (FIRST/FOLLOW, LL(1) tables, nullable sets, parse-tree counts, PDA runs).
    ex = class exercise (Oct 27) question as written; exv = a variant in the same style. */
@@ -16,10 +16,12 @@
     3: { name: 'Pushdown automata', short: 'PDAs', sections: 'Sipser 2.2, Lecture 7' },
     4: { name: 'Predictive parsing', short: 'LL(1) parsing', sections: 'Aho 2.4, Lecture 7' },
     5: { name: 'Building parsing tables', short: 'Parse tables', sections: 'Lecture 9' },
-    6: { name: 'Turing machines', short: 'Turing machines', sections: 'Sipser 3.1, Lecture 12' }
+    6: { name: 'Turing machines', short: 'Turing machines', sections: 'Sipser 3.1, Lectures 12–13' },
+    7: { name: 'Recursive and RE languages', short: 'RE & encoding', sections: 'Lecture 13' },
+    8: { name: 'Post Correspondence Problem', short: 'PCP', sections: 'Lecture 14' }
   };
   // Practice exam: same length and pace as Midterm 1 until the Midterm 2 announcement says otherwise.
-  window.EXAM_CONFIG = { n: 29, mix: { 1: 6, 2: 4, 3: 5, 4: 5, 5: 4, 6: 5 } };
+  window.EXAM_CONFIG = { n: 29, mix: { 1: 4, 2: 3, 3: 4, 4: 4, 5: 3, 6: 4, 7: 4, 8: 3 } };
 
   var LLT = tbl(['', 'id', '+', '*', '(', ')', '$'], [
     ['E', 'E → TE′', '', '', 'E → TE′', '', ''],
@@ -52,7 +54,16 @@
       tbl(['From', 'Label', 'To'], [['q₀', 'a,R', 'q₀'], ['q₀', 'b/x,R', 'q₁'], ['q₀', '#,R', 'q₄'], ['q₁', 'a,R and b,R', 'q₁'], ['q₁', '#,R', 'q₂'], ['q₂', 'a,R and b,R', 'q₂'], ['q₂', '#/b,R', 'q₃'], ['q₃', 'a,L and b,L and #,L', 'q₃'], ['q₃', 'x/#,R', 'q₀']]),
     'g-pal': '<p>The Lecture 12 palindrome detector for strings of 0s and 1s, as 5-tuples (state, read, write, next state, move). ␣ is the blank; A is the start state and Z the accept state:</p>' +
       gram(['(A,1,␣,B,R)  (A,0,␣,C,R)  (A,␣,␣,Z,R)', '(B,0,0,B,R)  (B,1,1,B,R)  (B,␣,␣,D,L)', '(C,0,0,C,R)  (C,1,1,C,R)  (C,␣,␣,E,L)', '(D,1,␣,F,L)  (D,␣,␣,Z,L)', '(E,0,␣,F,L)  (E,␣,␣,Z,L)', '(F,0,0,F,L)  (F,1,1,F,L)  (F,␣,␣,A,R)']),
-    'g-comb': '<p>Lecture 12 combines machines: f(x, y) = x + y if x &gt; y, and 0 if x ≤ y. A Comparer sends x, y to an Adder when x &gt; y and to an Eraser (output 0) when x ≤ y.</p>'
+    'g-comb': '<p>Lecture 12 combines machines: f(x, y) = x + y if x &gt; y, and 0 if x ≤ y. A Comparer sends x, y to an Adder when x &gt; y and to an Eraser (output 0) when x ≤ y.</p>',
+    'g-mult': '<p>Class exercise (Nov 10), also on the Lecture 13 slides with states q₀–q₉. Input 1ˣ#1ʸ## with the head on the first 1; Γ = {a, 1, #}, blank #, Σ = {1}, start A, F = {Z}. A label 1,R leaves the symbol unchanged:</p>' +
+      tbl(['From', 'Label', 'To'], [['A', '1/a,R', 'B'], ['A', '#,R', 'H'], ['B', '1,R', 'B'], ['B', '#,R', 'C'], ['C', '1/a,R', 'D'], ['C', '#,L', 'G'], ['D', '1,R', 'D'], ['D', '#,R', 'E'], ['E', '1,R', 'E'], ['E', '#/1,L', 'F'], ['F', '1,L and #,L', 'F'], ['F', 'a/1,R', 'C'], ['G', '1,L and #,L', 'G'], ['G', 'a/1,R', 'A'], ['H', '#,R', 'Z'], ['H', '1,R', 'J'], ['J', '1,R', 'J'], ['J', '#,R', 'Z']]),
+    'g-enc': '<p>The lecture’s encoding of a Turing machine: 110 is a comma, 1110 is R, 11110 is L, 111110 is the arrow →, 10 is the digit 1 and 0 is the digit 0. State indices are written in binary, then each digit is encoded. A transition δ(q, s) → (p, t, D) is encoded as q , s → p , t , D.</p>',
+    'g-cnt': '<p>A counter machine stores a stack as one integer. With Γ = {Z, A, B, C} and Z = 1, A = 2, B = 3, C = 4, the stack is a base-5 number whose last digit is the top: Push(y) is x = 5x + y.</p>',
+    'g-pcp4': '<p>The PCP instance from the Lecture 14 slides (dominoes numbered 1–4):</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', 'a', 'ac'], ['2', 'c', 'ba'], ['3', 'ba', 'a'], ['4', 'acb', 'b']]),
+    'g-pcp2': '<p>A PCP instance over Σ = {0, 1} from Lecture 14:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '011', '10111'], ['2', '111', '11']]),
+    'g-pcp3': '<p>Another PCP instance from Lecture 14:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '1', '111'], ['2', '10111', '10'], ['3', '10', '0']]),
+    'g-pcpcd': '<p>The Lecture 14 class-discussion instance:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '10', '101'], ['2', '011', '11'], ['3', '101', '011']]),
+    'g-pcpx': '<p>An instance from the Lecture 14 exercises slide, over Σ = {0, 1}:</p>' + tbl(['i', 'Top (A: wᵢ)', 'Bottom (B: xᵢ)'], [['1', '01', '010'], ['2', '110', '00'], ['3', '010', '101']])
   };
 
   var N5 = ['1', '2', '3', '4', '5'];
@@ -457,7 +468,128 @@
       x: "Hilbert asked for an algorithm deciding every mathematical proposition; Gödel’s incompleteness theorem (1931) showed some questions cannot be answered yes or no; Turing proposed his machine in 1936." },
     { id: 'c6-23', exv: 1, t: 6, s: 'TM vs PDA', q: 'What can a Turing machine do that a PDA cannot?',
       c: ["Keep a finite number of states in its control","Read its input symbols from left to right","Move its head both ways and write on the tape","Make nondeterministic choices between moves","None of these"], a: 2,
-      x: "The tape is input, storage and output at once, and the head can move left or right and overwrite cells. A PDA reads its input once, left to right, and can only use its stack." }
+      x: "The tape is input, storage and output at once, and the head can move left or right and overwrite cells. A PDA reads its input once, left to right, and can only use its stack." },
+    /* Class exercise (Nov 10) as written (ex), plus variants (exv). Lecture 13: TM simulator, RE and recursive
+       languages, TM encoding, diagonalization. Lecture 14: Post Correspondence Problem. Verified by computation. */
+    { id: 'n10-1', ex: 1, exd: 'Nov 10', g: 'g-enc', t: 7, s: 'Encoding a TM', q: 'Which of the following sequences of bits represents the transition δ(q₃, 1) → (q₁, 1, L)?',
+      c: ["<code>1010 110 100 111110 10 110 0 110 1110</code>","<code>1010 110 10 111110 10 110 0 110 1110</code>","<code>1010 110 10 111110 10 110 0 110 11110</code>","<code>1000 110 10 111110 100 110 0 110 1110</code>","<code>1010 110 10 111110 10 110 10 110 11110</code>"], a: 4,
+      x: "Encode the parts in order: q₃ is 11 in binary, so 10 10; comma 110; the symbol 1 is 10; arrow 111110; q₁ is 1 in binary, so 10; comma 110; the symbol written, 1, is 10; comma 110; L is 11110. The other choices write 0 instead of 1, use R (1110) instead of L, or encode the wrong state." },
+    { id: 'n10-2', ex: 2, exd: 'Nov 10', t: 6, s: 'One move', q: 'In one move the Turing machine:',
+      c: ["May change its state","Move the head one position left or right","Write a symbol on the cell being scanned","All of these"], a: 3,
+      x: "One application of δ(q, a) = (p, b, D) does all three: it writes b over the scanned cell, moves the head one cell in direction D and goes to state p (which may be the same state)." },
+    { id: 'n10-3', ex: true, exd: 'Nov 10', g: 'g-mult', t: 6, s: 'Tracing', q: 'Given the numbers 2 and 3 in unary, what would the tape look like at the end of the execution?',
+      c: ["110","10 11 101","11111","None of these","111111","11 111 11111","10 11 110"], a: 4,
+      x: "The machine multiplies. For each 1 of x it marks the 1 with a, then copies all of y to the end (marking each 1 of y with a, writing a 1 at the end, and restoring it). On 11#111## it halts in Z with 11#111#111111: x and y are left in place and the result block is 111111, since 2 × 3 = 6. Read strictly as the whole tape, no option shows it exactly; the result is 111111. 11 111 11111 is the trap: that would be 2 + 3." },
+    { id: 'n10-4', ex: 4, exd: 'Nov 10', t: 6, s: 'Power', q: 'Turing machine is more powerful than:',
+      c: ["Finite automata","Push down automata","Both (a) and (b)","None of these"], a: 2,
+      x: "Every finite automaton and every PDA can be simulated by a Turing machine, and Turing machines recognize languages neither can, such as {aⁿbⁿcⁿ}." },
+    { id: 'c6-24', exv: 1, g: 'g-mult', t: 6, s: 'Tracing', q: 'What does this machine compute from 1ˣ#1ʸ##?',
+      c: ["x + y, written after y","the larger of x and y","x − y, written over x","x · y, written after y","None of these"], a: 3,
+      x: "The outer loop (A, B, G) visits each 1 of x; the inner loop (C to F) copies y once per visit. So y is written x times: the product x · y in unary." },
+    { id: 'c6-25', exv: 1, g: 'g-mult', t: 6, s: 'Tracing', q: 'What is on the tape when the machine halts on 1#11##?',
+      c: ["1#11#11","1#11#111","1#11#1","a#aa#11","None of these"], a: 0,
+      x: "x = 1 and y = 2, so y is copied once: 1#11#11. Every a is turned back into 1 before the machine halts." },
+    { id: 'c6-26', exv: 1, g: 'g-mult', t: 6, s: 'Tracing', q: 'What is the symbol a used for?',
+      c: ["It is the blank symbol of this machine","It separates x from y on the tape","It marks the 1 being copied","It is written as the final answer","None of these"], a: 2,
+      x: "a/1,R in F and G restores a marked 1 once its copy is made, so a always marks the 1 (of x or y) the machine is working on." },
+    { id: 'c6-27', exv: 1, t: 6, s: 'Binary increment', q: 'The Lecture 13 class exercise builds a TM that adds one to a binary number. What should it leave on the tape for 1011?',
+      c: ["1010","10111","1100","1101","None of these"], a: 2,
+      x: "1011 is 11, plus one is 12 = 1100. The machine runs to the right end, then moves left turning 1s into 0s until it finds a 0 (or a blank), which it turns into 1. For 111 that gives 1000, one digit longer." },
+
+    { id: 'c7-01', exv: 1, t: 7, s: 'RE languages', q: 'A language L is recursively enumerable (RE) if some Turing machine',
+      c: ["accepts exactly L, but may loop on strings not in L","halts on every input and accepts exactly the strings in L","rejects every string in L and accepts the rest","uses two tapes and halts on every input","None of these"], a: 0,
+      x: "RE: for w ∈ L the machine halts in an accepting state; for w ∉ L it either halts in a non-accepting state or never halts. Halting on every input is the stronger condition for recursive." },
+    { id: 'c7-02', exv: 1, t: 7, s: 'Recursive languages', q: 'What makes a language recursive rather than just recursively enumerable?',
+      c: ["Its machine accepts at least one string","Its machine has only finitely many states","Its machine uses a two-stack PDA","Its machine halts on every input","None of these"], a: 3,
+      x: "Recursive: some TM halts on all inputs, accepting w ∈ L and halting in a non-accepting state otherwise. (Every TM has finitely many states.)" },
+    { id: 'c7-03', exv: 1, t: 7, s: 'Language classes', q: 'Which statement matches the lecture’s diagram of language classes?',
+      c: ["Every recursive language is RE","Every RE language is recursive","Every language is RE","L_d is recursive","None of these"], a: 0,
+      x: "Recursive sits inside RE, and some languages (such as L_d) are outside RE altogether." },
+    { id: 'c7-04', exv: 1, t: 7, s: 'Extensions', q: 'True or false: a multi-tape Turing machine can recognize languages that a basic one-tape Turing machine cannot.',
+      c: ["True","False"], a: 1,
+      x: "Nondeterministic and multi-tape TMs are extensions with the same language-recognizing power as the basic model. They can be faster, not more powerful." },
+    { id: 'c7-05', exv: 1, t: 7, s: 'Restrictions', q: 'Which of these has the same language-recognizing power as a basic Turing machine?',
+      c: ["A PDA with one stack","A finite automaton with two heads","A PDA with two stacks","A DFA with extra accept states","None of these"], a: 2,
+      x: "From the lecture: semi-infinite tapes, PDAs with two stacks and counter machines are restrictions that keep full TM power. One stack only gives the context-free languages." },
+    { id: 'c7-06', exv: 1, g: 'g-cnt', t: 7, s: 'Counter machines', q: 'The stack holds, from bottom to top, Z, A, C, B. What integer x represents it?',
+      c: ["486","198","124","1243","None of these"], a: 1,
+      x: "The top symbol is the 5⁰ digit: x = 3 (B) + 4·5 (C) + 2·5² (A) + 1·5³ (Z) = 3 + 20 + 50 + 125 = 198. 486 reads the stack upside down." },
+    { id: 'c7-07', exv: 1, g: 'g-cnt', t: 7, s: 'Counter machines', q: 'Starting from x = 198, what is x after Push(A)?',
+      c: ["200","990","1000","992","None of these"], a: 3,
+      x: "Push(y): x = 5x + y = 5 · 198 + 2 = 992. Shifting left one base-5 digit makes room for the new top." },
+    { id: 'c7-08', exv: 1, g: 'g-cnt', t: 7, s: 'Counter machines', q: 'With x = 198, which symbol is on top of the stack?',
+      c: ["Z","A","B","C","None of these"], a: 2,
+      x: "The top is x mod 5 = 198 mod 5 = 3, which is B. Popping it leaves x div 5 = 39. (The slide writes Pop as x mod 5; mod gives the top symbol, and integer division removes it.)" },
+    { id: 'c7-09', exv: 1, g: 'g-enc', t: 7, s: 'Encoding a TM', q: 'How is the slide’s example rule δ(q₂, 1) → (q₃, 0, R) encoded?',
+      c: ["<code>100 110 10 111110 1010 110 0 110 1110</code>","<code>1010 110 10 111110 100 110 0 110 1110</code>","<code>100 110 10 111110 1010 110 10 110 1110</code>","<code>100 110 10 111110 1010 110 0 110 11110</code>","None of these"], a: 0,
+      x: "q₂ is 10 in binary, encoded 10 0; comma 110; symbol 1 is 10; arrow 111110; q₃ is 11, encoded 10 10; comma 110; written symbol 0 is 0; comma 110; R is 1110. The others swap the states, write 1 instead of 0, or use L." },
+    { id: 'c7-10', exv: 1, g: 'g-enc', t: 7, s: 'Encoding a TM', q: 'Which transition does <code>10 110 0 111110 100 110 10 110 1110</code> encode?',
+      c: ["δ(q₁, 1) → (q₂, 0, R)","δ(q₂, 0) → (q₁, 1, R)","δ(q₁, 0) → (q₂, 1, L)","δ(q₁, 0) → (q₂, 1, R)","None of these"], a: 3,
+      x: "Split at the separators: 10 = state 1 (q₁); 110 comma; 0 = symbol 0; 111110 arrow; 100 = 10 in binary (q₂); 110 comma; 10 = symbol 1; 110 comma; 1110 = R." },
+    { id: 'c7-11', exv: 1, g: 'g-enc', t: 7, s: 'Encoding a TM', q: 'In this scheme, what does 111110 represent?',
+      c: ["A comma","R","L","The arrow →","None of these"], a: 3,
+      x: "110 comma, 1110 R, 11110 L, 111110 the arrow. Each separator is a run of 1s ended by a 0, one 1 longer than the last." },
+    { id: 'c7-12', exv: 1, t: 7, s: 'Enumerating TMs', q: 'True or false: every positive integer, written in binary, is the valid encoding of some Turing machine.',
+      c: ["True","False"], a: 1,
+      x: "Many integers are not valid encodings. The lecture treats each of those as a TM with one non-accepting state and no transitions, so it accepts nothing. That way T₁, T₂, T₃, … lists every TM." },
+    { id: 'c7-13', exv: 1, t: 7, s: 'Diagonalization', q: 'The diagonalization language L_d is',
+      c: ["{ k | T_k accepts input k }","{ k | T_k does not halt on any input }","{ k | T_k does not accept input k }","{ k | k is a valid TM encoding }","None of these"], a: 2,
+      x: "L_d = { k | T_k does not accept input k }: the strings each machine fails to accept on its own number." },
+    { id: 'c7-14', exv: 1, t: 7, s: 'Diagonalization', q: 'Suppose some T_i accepts L_d. If T_i accepts input i, then',
+      c: ["i ∈ L_d, which is consistent","T_i must loop forever on i","i ∉ L_d, so T_i must not accept i","T_i halts in a non-accepting state","None of these"], a: 2,
+      x: "Accepting i means i ∉ L_d by definition, but T_i accepts exactly L_d, so it should not accept i. The other case (T_i rejects i, so i ∈ L_d, so it should accept) also contradicts. So no such T_i exists." },
+    { id: 'c7-15', exv: 1, t: 7, s: 'Diagonalization', q: 'What does the diagonalization argument prove about L_d?',
+      c: ["It is not RE","It is RE but not recursive","It is recursive","It is context-free","None of these"], a: 0,
+      x: "No Turing machine accepts L_d, so it is non-RE: a problem no computer can solve. Complementing the diagonal builds a row that differs from every T_k in position k." },
+    { id: 'c7-16', exv: 1, t: 7, s: 'TMs and computers', q: 'According to the lecture, a Turing machine can simulate a real computer',
+      c: ["with at most a polynomial slowdown","only for programs that always halt","only with one tape per register","only with an exponential slowdown","None of these"], a: 0,
+      x: "A computer can simulate a TM, and a TM can simulate a computer with at most a polynomial slowdown, so the two have the same power." },
+
+    { id: 'c8-01', exv: 1, t: 8, s: 'PCP definition', q: 'An instance of the Post Correspondence Problem has a solution when',
+      c: ["each domino has the same string on top and on bottom","a sequence of dominoes spells one string on top and bottom","all dominoes can be used once each in some matching order","every top string is a prefix of some bottom string","None of these"], a: 1,
+      x: "A solution is a sequence of one or more indices i₁, …, i_m with w_{i₁}…w_{i_m} = x_{i₁}…x_{i_m}. Dominoes may be repeated as often as needed." },
+    { id: 'c8-02', exv: 1, t: 8, s: 'PCP definition', q: 'True or false: in a PCP solution, each domino may be used at most once.',
+      c: ["True","False"], a: 1,
+      x: "You have as many copies of each domino as you need. The slide’s solution 1, 2, 3, 1, 4 uses domino 1 twice." },
+    { id: 'c8-03', exv: 1, g: 'g-pcp4', t: 8, s: 'Solving PCP', q: 'Which sequence is a solution?',
+      c: ["1, 2, 3, 4","1, 3, 2, 4","4, 3, 2, 1","1, 2, 3, 1, 4","None of these"], a: 3,
+      x: "1, 2, 3, 1, 4 gives a·c·ba·a·acb = acbaaacb on top and ac·ba·a·ac·b = acbaaacb on the bottom. 1, 2, 3, 4 gives acbaacb over acbaab." },
+    { id: 'c8-04', exv: 1, g: 'g-pcp4', t: 8, s: 'Solving PCP', q: 'Why must any solution start with domino 1?',
+      c: ["Only its top and bottom agree on their first symbols","It is the shortest domino, so it must be placed first","PCP solutions always have to start with the first pair","Its top and bottom strings have exactly the same length","None of these"], a: 0,
+      x: "The first domino’s top and bottom must agree as far as the shorter one goes: a is a prefix of ac, but c/ba, ba/a and acb/b disagree at the first symbol. (Always starting with pair 1 is the rule of the modified problem, MPCP, not PCP.)" },
+    { id: 'c8-05', exv: 1, g: 'g-pcp2', t: 8, s: 'Solving PCP', q: 'Does this instance have a solution?',
+      c: ["No, the bottom always stays longer","Yes: 1, 2","Yes: 2, 1, 2","Yes: 1, 2, 1","None of these"], a: 2,
+      x: "2, 1, 2: 111·011·111 = 111011111 and 11·10111·11 = 111011111. This is the instance the lecture turns into the grammars G_u and G_v." },
+    { id: 'c8-06', exv: 1, g: 'g-pcp3', t: 8, s: 'Solving PCP', q: 'Which sequence solves this instance?',
+      c: ["1, 2, 3","2, 1, 3","2, 3, 1, 1","None of these","2, 1, 1, 3"], a: 4,
+      x: "From the slide: w₂w₁w₁w₃ = 10111·1·1·10 = 101111110 and x₂x₁x₁x₃ = 10·111·111·0 = 101111110." },
+    { id: 'c8-07', exv: 1, g: 'g-pcpcd', t: 8, s: 'Solving PCP', q: 'Does the class-discussion instance have a solution?',
+      c: ["Yes: 1, 3","Yes: 1, 2, 3","No","Yes: 2, 3, 1","None of these"], a: 2,
+      x: "Only 10/101 can start (a prefix match). The bottom is then one 1 ahead, so the next top must start with 1: only 101/011 fits, and it leaves the bottom one symbol ahead again. The strings never become equal. (Checked by exhaustive search.)" },
+    { id: 'c8-08', exv: 1, g: 'g-pcpx', t: 8, s: 'Solving PCP', q: 'Does this instance from the exercises slide have a solution?',
+      c: ["Yes: 1, 3, 2","Yes: 1, 1, 3","Yes: 3, 2, 1","No","None of these"], a: 3,
+      x: "Only 01/010 can start. The bottom is then 0 ahead; 01/010 next fails, so 010/101 is forced, leaving the bottom 1 ahead. The only top starting with 1 is 110/00, which mismatches (110 vs 100). Every path dies, so there is no solution (checked by exhaustive search)." },
+    { id: 'c8-09', exv: 1, t: 8, s: 'Undecidability', q: 'What does it mean that PCP is undecidable?',
+      c: ["No instance of PCP has any solution","No algorithm decides it for every instance","Solutions, when they exist, are infinitely long","A proposed solution cannot be checked by a TM","None of these"], a: 1,
+      x: "Individual instances can be solved, and a proposed sequence is easy to check. What does not exist is one algorithm that answers correctly for every set of dominoes." },
+    { id: 'c8-10', exv: 1, t: 8, s: 'Undecidability', q: 'To show PCP is undecidable, the lecture says one could reduce',
+      c: ["the Halting Problem to PCP","PCP to the Halting Problem","PCP to CFG ambiguity","MPCP to a DFA","None of these"], a: 0,
+      x: "Reduce a known undecidable problem to PCP: if PCP were decidable, the Halting Problem would be too. The details are messy, so the slides just accept the result." },
+    { id: 'c8-11', exv: 1, t: 8, s: 'MPCP', q: 'How does the Modified PCP (MPCP) differ from PCP?',
+      c: ["The solution must begin with pair 1","Each pair may be used only once","Top and bottom strings must have equal length","The alphabet must be exactly {0, 1}","None of these"], a: 0,
+      x: "MPCP asks for w₁w_{i₁}…w_{i_m} = x₁x_{i₁}…x_{i_m}: the solution must begin with pair 1." },
+    { id: 'c8-12', exv: 1, g: 'g-pcp2', t: 8, s: 'PCP and CFGs', q: 'From this instance, G_u has the rules S_u → 011 S_u 1 | 0111 | 111 S_u 2 | 1112. Why are the indices 1 and 2 added?',
+      c: ["To make G_u an unambiguous grammar","To give G_u and G_v the same alphabet","To end every derivation with a terminal","To record which dominoes were used","None of these"], a: 3,
+      x: "The index trail (written in reverse) means G_u and G_v can only produce the same string if they used the same dominoes in the same order, which is exactly a PCP solution." },
+    { id: 'c8-13', exv: 1, g: 'g-pcp2', t: 8, s: 'PCP and CFGs', q: 'Using the solution 2, 1, 2, which string do both G_u and G_v derive?',
+      c: ["111011111212","111011111","111011111122","011111111212","None of these"], a: 0,
+      x: "S_u ⇒ 111 S_u 2 ⇒ 111011 S_u 12 ⇒ 111011111212, and S_v ⇒ 11 S_v 2 ⇒ 1110111 S_v 12 ⇒ 111011111212. The domino string is followed by the indices in reverse." },
+    { id: 'c8-14', exv: 1, t: 8, s: 'PCP and CFGs', q: 'Which problems does the lecture show are undecidable, using PCP?',
+      c: ["Whether a CFG is ambiguous","Whether two CFGs have disjoint languages","Both (a) and (b)","Whether a DFA accepts a given string","None of these"], a: 2,
+      x: "Disjointness: L(G_u) ∩ L(G_v) ≠ ∅ exactly when the instance has a solution. Ambiguity: S_new → S_u | S_v is ambiguous exactly when some string is in both. A DFA accepting a string is easily decidable." },
+    { id: 'c8-15', exv: 1, t: 8, s: 'PCP and CFGs', q: 'In the ambiguity proof, the grammar with S_new → S_u | S_v is ambiguous exactly when',
+      c: ["G_u is ambiguous on its own","the instance has no solution","some string is derived by both G_u and G_v","S_u and S_v derive the same number of strings","None of these"], a: 2,
+      x: "A string derivable from both S_u and S_v has two parse trees under S_new, and that happens exactly when the PCP instance has a solution. So deciding ambiguity would decide PCP." }
   ];
 
   Q.forEach(function (q) { q.fmt = 'prof'; q.keep = true; });
