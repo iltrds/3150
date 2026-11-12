@@ -62,6 +62,10 @@ Choices were balanced so the correct answer is not given away by length: it is t
 
 Pages link assets with a version tag (`style.css?v=…`) so browsers fetch fresh copies after an update. When you change any file in `assets/`, bump the tag in every page (same value everywhere).
 
+## Crossing out choices
+
+Every unanswered choice has an “abc” button that strikes it through without answering it (process of elimination); Shift + the choice’s letter does the same. Strikes are stored on the question instance (`inst.struck`), so an in-progress practice exam keeps them across navigation and resume. Choosing a struck option clears its strike, and strikes are hidden once a quiz answer is revealed.
+
 ## Adding to Midterm 2
 
 Midterm 2 data lives in `assets/m2/` (`questions.js` also sets `TOPICS`, `GROUPS` and `EXAM_CONFIG`; `cards.js`). Add new lectures' questions there and new sections to `m2/guide.html`. Questions from the class exercises carry `ex: <question number>` (or `true` when the number is unknown) and `exd` for the date (default Oct 27) (shown with a “Class exercise” tag); variants written in the same style carry `exv: 1`. Both appear in random exams and in the quiz's class-exercise filter (`quiz.html?source=exercise`). The exercise's regex question (`ex-1`) and its variants are in `assets/m1/questions-prof.js`. Choices may number 2 to 6; a sixth choice is F on screen and key 6. Midterm 2 progress is stored separately (`cis3150:m2:` prefix).

@@ -167,17 +167,38 @@
     }
     card.appendChild(el('div', { class: 'qtext', id: 'qtext-' + q.id }, q.q));
     var list = el('ul', { class: 'choices', role: 'list' });
+    // Struck-out choices (process of elimination) live on the instance, so a saved exam keeps them.
+    var struck = opts.inst.struck = (opts.inst.struck || []).filter(function (d) { return d !== opts.selected; });
     order.forEach(function (orig, di) {
-      var cls = 'choice';
+      var cls = 'choice', isStruck = !opts.reveal && struck.indexOf(di) >= 0;
       if (opts.selected === di) cls += ' is-filled';
+      if (isStruck) cls += ' is-struck';
       if (opts.reveal) {
         if (orig === q.a) cls += ' is-correct';
         else if (opts.selected === di) cls += ' is-wrong';
       }
       var b = el('button', { class: cls, type: 'button', 'aria-pressed': opts.selected === di ? 'true' : 'false', disabled: opts.reveal ? true : false },
         '<span class="bubble" aria-hidden="true">' + LETTERS[di] + '</span><span><span class="sr-only">' + LETTERS[di] + '. </span>' + q.c[orig] + '</span>');
-      if (!opts.reveal && opts.onSelect) b.addEventListener('click', function () { opts.onSelect(di); });
-      var li = el('li'); li.appendChild(b); list.appendChild(li);
+      if (!opts.reveal && opts.onSelect) b.addEventListener('click', function () {
+        var k = struck.indexOf(di); if (k >= 0) struck.splice(k, 1); // choosing a struck option un-strikes it
+        opts.onSelect(di);
+      });
+      var li = el('li', { class: 'choice-row' }); li.appendChild(b);
+      if (!opts.reveal) {
+        var sb = el('button', { class: 'strike', type: 'button', 'data-di': di, 'aria-pressed': isStruck ? 'true' : 'false',
+          'aria-label': (isStruck ? 'Restore' : 'Cross out') + ' choice ' + LETTERS[di], title: 'Cross out (Shift+' + LETTERS[di] + ')' },
+          '<span class="strike-ico" aria-hidden="true">abc</span>');
+        sb.addEventListener('click', function () {
+          var k = struck.indexOf(di), on = k < 0;
+          if (on) struck.push(di); else struck.splice(k, 1);
+          b.classList.toggle('is-struck', on);
+          sb.setAttribute('aria-pressed', on ? 'true' : 'false');
+          sb.setAttribute('aria-label', (on ? 'Restore' : 'Cross out') + ' choice ' + LETTERS[di]);
+          if (opts.onStrike) opts.onStrike();
+        });
+        li.appendChild(sb);
+      }
+      list.appendChild(li);
     });
     card.appendChild(list);
     if (opts.reveal) {
@@ -188,6 +209,16 @@
     }
     return card;
   }
+
+  window.addEventListener('keydown', function (e) {
+    if (!e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return;
+    var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
+    var m = /^(?:Key([A-G])|Digit([1-7]))$/.exec(e.code || ''); if (!m) return;
+    var di = m[1] ? m[1].charCodeAt(0) - 65 : Number(m[2]) - 1;
+    var btn = document.querySelector('.qcard .strike[data-di="' + di + '"]');
+    if (!btn) return;
+    e.preventDefault(); e.stopImmediatePropagation(); btn.click();
+  }, true);
 
   function isCorrect(inst, selected) { var q = byId(inst.id); return selected != null && inst.order[selected] === q.a; }
 

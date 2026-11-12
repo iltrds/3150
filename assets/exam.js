@@ -132,7 +132,7 @@
     var area = document.getElementById('qarea'); area.innerHTML = '';
     var i = S.current;
     var q = App.byId(S.items[i].id), num = S.mode === 'midterm' && q.mt ? q.mt : i + 1;
-    area.appendChild(App.renderQuestion({ inst: S.items[i], number: num, total: S.mode === 'midterm' ? null : count(), selected: S.answers[i], reveal: false, showMeta: false, groupLabel: groupLabel(i), onSelect: function (di) { setAnswer(i, di); } }));
+    area.appendChild(App.renderQuestion({ inst: S.items[i], number: num, total: S.mode === 'midterm' ? null : count(), selected: S.answers[i], reveal: false, showMeta: false, groupLabel: groupLabel(i), onSelect: function (di) { setAnswer(i, di); }, onStrike: save }));
     var fb = document.getElementById('flag');
     fb.setAttribute('aria-pressed', S.flags[i] ? 'true' : 'false');
     fb.textContent = S.flags[i] ? 'Flagged' : 'Flag for review';
